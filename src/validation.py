@@ -5,9 +5,6 @@ Validates ingested data against defined models and business rules.
 from pydantic import BaseModel, Field, field_validator, model_validator
 from typing import Optional
 from datetime import datetime
-import logging
-
-logger = logging.getLogger(__name__)
 
 # VALIDATION MODELS - Define Pydantic models for each dataset to enforce schema and business rules
 class Team(BaseModel):
