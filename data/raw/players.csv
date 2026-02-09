@@ -1,0 +1,221 @@
+player_id,name,team_id,position,date_of_birth,nationality,market_value,contract_until
+P00001,Jack Palmer,T001,goalkeeper,1992-01-24,Netherlands,30458838,
+P00002,James Jackson,T001,GK,2002-01-01,Germany,,2028-06-30
+P00003,Bukayo Anderson,T001,Centre-Back,1996-08-19,Argentina,1372248,2025-06-30
+P00004,Reece Gonzalez,T001,CB,1993-04-25,Belgium,12948136,2026-06-30
+P00005,Pedro Rice,T001,CB,1990-12-15,Belgium,51306024,
+P00006,Marcus Silva,T001,CB,1995-12-03,Spain,,2026-06-30
+P00007,Phil Rodriguez,T001,Centre-Back,1997-08-21,Spain,22331063,2025-06-30
+P00008,Lucas Palmer,T001,defender,2006-12-08,Argentina,51429647,2028-06-30
+P00009,Bruno Lopez,T001,Defender,1996-01-26,Germany,36435572,
+P00010,Gabriel Jackson,T001,Centre-Back,2001-11-15,Netherlands,,
+P00011,Martin Johnson,T001,CM,2002-10-13,Spain,19066572,2024-06-30
+P00012,Antoine Rodriguez,T001,midfielder,1994-11-14,Netherlands,52142594,2027-06-30
+P00013,Fernando Garcia,T001,Midfielder,1992-11-18,Italy,86528436,2026-06-30
+P00014,Cole Rice,T001,Midfielder,1997-09-25,Netherlands,14782218,2026-06-30
+P00015,Carlos Thomas,T001,midfielder,1993-06-25,England,71682864,2028-06-30
+P00016,Marcus Thomas,T001,Midfielder,2000-05-08,Spain,,2024-06-30
+P00017,Fernando Martinez,T001,midfielder,1993-11-16,Netherlands,22662965,2028-06-30
+P00018,Jack Silva,T001,forward,1998-07-22,Germany,59300797,2027-06-30
+P00019,Bukayo Rice,T001,Forward,1999-01-19,England,79479095,2024-06-30
+P00020,William Jackson,T001,forward,1991-01-28,France,69508866,2027-06-30
+P00021,Fernando Gonzalez,T001,Striker,1996-08-26,Portugal,13160194,
+P00022,Diego Lopez,T001,Striker,2003-12-02,Spain,87228778,
+P00023,Lucas Williams,T002,GK,1995-04-18,Italy,57123995,2027-06-30
+P00024,Thomas Anderson,T002,goalkeeper,1992-01-21,Italy,2480765,2025-06-30
+P00025,Ollie Taylor,T002,Centre-Back,1995-07-02,Brazil,789289,2026-06-30
+P00026,Bruno Jackson,T002,Centre-Back,2006-11-23,England,25987660,2024-06-30
+P00027,Marcus Garcia,T002,CB,1990-01-19,Spain,71786543,2028-06-30
+P00028,Oliver Harris,T002,Defender,1996-07-04,Spain,76960539,2028-06-30
+P00029,Diego Jones,T002,Centre-Back,2005-06-09,Brazil,96625636,2026-06-30
+P00030,Karim Martinez,T002,Centre-Back,1999-02-01,Netherlands,76063727,2024-06-30
+P00031,Cole Jackson,T002,CB,1993-06-03,Brazil,50097086,2027-06-30
+P00032,Jack Brown,T002,Defender,2006-05-22,Netherlands,,2026-06-30
+P00033,Antoine Thomas,T002,midfielder,1997-05-20,Brazil,46520613,2026-06-30
+P00034,Martin Jones,T002,Midfielder,1991-11-14,Brazil,6417225,
+P00035,Bukayo Jones,T002,midfielder,2003-09-23,Netherlands,1797845,
+P00036,Pedro Gonzalez,T002,Midfielder,2000-10-18,England,,
+P00037,Rafael Jones,T002,CM,1995-11-08,Germany,47969942,2027-06-30
+P00038,Ollie Palmer,T002,midfielder,1994-07-01,Germany,45085178,2027-06-30
+P00039,William Taylor,T002,CM,1994-12-04,Argentina,5697528,2025-06-30
+P00040,Martin Rodriguez,T002,ST,1996-04-01,Argentina,53981198,2024-06-30
+P00041,Bruno Rodriguez,T002,Striker,2006-06-01,England,,2025-06-30
+P00042,Jack Wilson,T002,Forward,2002-06-24,Belgium,59071795,2028-06-30
+P00043,Phil Palmer,T002,forward,1997-01-23,Germany,70282527,2028-06-30
+P00044,Gabriel Fernandez,T002,ST,2002-02-22,Netherlands,84138503,2024-06-30
+P00045,Fernando Palmer,T003,Goalkeeper,2002-06-13,Portugal,74911983,
+P00046,Pedro Martinez,T003,goalkeeper,1994-10-19,Portugal,74042887,2026-06-30
+P00047,Phil Williams,T003,CB,2003-08-15,Brazil,69108612,2025-06-30
+P00048,Oliver Silva,T003,CB,1991-04-22,Italy,27226767,
+P00049,Diego Silva,T003,Defender,2003-07-21,France,96914756,2027-06-30
+P00050,Karim Silva,T003,Defender,1992-07-08,Spain,93903697,2024-06-30
+P00051,Rafael Moore,T003,Centre-Back,1993-08-22,Portugal,75517682,2027-06-30
+P00052,Martin Moore,T003,Centre-Back,1994-12-28,Italy,35288100,2026-06-30
+P00053,Karim Williams,T003,defender,1997-08-03,France,31973195,2026-06-30
+P00054,Fernando Lopez,T003,defender,1996-07-23,Netherlands,29216269,
+P00055,Bukayo Smith,T003,Central Midfielder,2002-01-07,Belgium,52774692,2028-06-30
+P00056,Karim Jackson,T003,Central Midfielder,2004-01-12,Belgium,52843121,2027-06-30
+P00057,Gabriel Garcia,T003,midfielder,2004-04-09,Italy,4395645,2027-06-30
+P00058,Declan Anderson,T003,midfielder,2006-01-13,France,89486321,
+P00059,Martin Wilson,T003,Central Midfielder,1994-01-09,Brazil,28908562,2026-06-30
+P00060,Lucas Rice,T003,Central Midfielder,1997-02-16,Spain,,2026-06-30
+P00061,Pierre Palmer,T003,Midfielder,1989-04-07,Spain,83894260,2025-06-30
+P00062,Martin Garcia,T003,forward,2003-12-09,Brazil,23020277,2024-06-30
+P00063,Marcus White,T003,Forward,1989-05-19,Germany,50872847,2025-06-30
+P00064,Karim Anderson,T003,Forward,1998-11-20,Argentina,76458181,2026-06-30
+P00065,Jack Anderson,T003,Forward,2005-11-11,Argentina,,2027-06-30
+P00066,Martin Thomas,T003,Striker,1993-07-06,Italy,87802916,2028-06-30
+P00067,Lucas Taylor,T004,Goalkeeper,1997-06-28,Belgium,12131697,2027-06-30
+P00068,Luis Rodriguez,T004,goalkeeper,2001-06-01,Argentina,44122663,2025-06-30
+P00069,Gabriel Anderson,T004,CB,1997-09-01,Italy,26143159,
+P00070,Lucas Wilson,T004,defender,2004-11-23,Germany,2814351,
+P00071,Carlos Gonzalez,T004,CB,2000-08-18,Italy,57610154,2028-06-30
+P00072,Gabriel Jackson,T004,CB,1998-05-08,France,,2024-06-30
+P00073,Rafael Fernandez,T004,defender,1995-12-16,Spain,79633014,2028-06-30
+P00074,Alexander Johnson,T004,defender,1998-04-12,England,2398961,2025-06-30
+P00075,Pedro Thomas,T004,CB,1993-11-28,Italy,14269080,2028-06-30
+P00076,Marcus Wilson,T004,Centre-Back,1999-03-02,Italy,64619726,
+P00077,Lucas Brown,T004,Midfielder,1990-03-05,Netherlands,41280112,
+P00078,Fernando Fernandez,T004,Central Midfielder,1996-09-13,Belgium,59921007,2028-06-30
+P00079,Lucas Garcia,T004,Midfielder,1992-04-21,Netherlands,89141164,
+P00080,Lucas Fernandez,T004,Midfielder,1994-01-14,Brazil,80199989,2024-06-30
+P00081,Fernando Brown,T004,Central Midfielder,1991-11-08,Netherlands,84393865,2025-06-30
+P00082,Ollie Fernandez,T004,midfielder,1993-05-27,Belgium,,
+P00083,Antoine Jackson,T004,CM,2003-02-15,Italy,94416665,2026-06-30
+P00084,James Williams,T004,Striker,1991-10-02,Germany,99087474,2026-06-30
+P00085,Alexander Garcia,T004,Forward,1997-10-02,Belgium,24013701,2027-06-30
+P00086,Reece Garcia,T004,Striker,2004-02-16,Argentina,45235895,2024-06-30
+P00087,Marcus Lopez,T004,Striker,2004-05-22,Brazil,74332717,
+P00088,Jean Anderson,T004,ST,1992-07-28,England,654493,2028-06-30
+P00089,William Rodriguez,T005,GK,2005-06-20,Netherlands,84440940,2024-06-30
+P00090,Ollie Silva,T005,GK,1998-08-23,France,4374790,2028-06-30
+P00091,Jean Brown,T005,CB,2006-01-18,France,30658811,2024-06-30
+P00092,Jean Jackson,T005,Centre-Back,1998-09-23,France,65259996,2025-06-30
+P00093,Martin Anderson,T005,Centre-Back,1995-10-17,Argentina,18821839,2026-06-30
+P00094,Reece Jones,T005,CB,1989-05-24,Italy,79277447,2027-06-30
+P00095,Reece Martinez,T005,Centre-Back,2000-06-18,Germany,51128276,2026-06-30
+P00096,Diego Palmer,T005,Centre-Back,1996-07-02,France,63981797,2027-06-30
+P00097,Jack Moore,T005,Centre-Back,1990-03-17,Italy,45059574,2027-06-30
+P00098,Ollie Rodriguez,T005,Defender,1993-07-28,Argentina,21218012,
+P00099,Declan Thomas,T005,Central Midfielder,1991-06-28,Netherlands,72121574,2026-06-30
+P00100,Fernando Brown,T005,Midfielder,1991-04-21,Spain,39071356,2024-06-30
+P00101,Pedro Gonzalez,T005,Central Midfielder,1994-12-10,Argentina,6672803,2024-06-30
+P00102,Thomas Williams,T005,Central Midfielder,1993-04-17,Belgium,92009696,2025-06-30
+P00103,Jean Rodriguez,T005,Central Midfielder,1996-08-19,England,,2026-06-30
+P00104,Pedro Rice,T005,Central Midfielder,1998-11-18,Portugal,59787967,2028-06-30
+P00105,Diego White,T005,CM,2003-05-07,Argentina,65355088,
+P00106,Reece Palmer,T005,ST,1998-01-27,England,37340133,
+P00107,Alexander Palmer,T005,Striker,1998-04-20,France,29894291,2028-06-30
+P00108,Marcus Fernandez,T005,Forward,1990-05-26,Argentina,78289079,2025-06-30
+P00109,Cole Garcia,T005,Striker,1994-04-05,Brazil,49604566,2026-06-30
+P00110,Harry Silva,T005,Striker,1998-12-28,Portugal,15957816,2024-06-30
+P00111,Luis Palmer,T006,goalkeeper,2000-02-26,Brazil,35995029,2027-06-30
+P00112,Rafael Jackson,T006,goalkeeper,2001-11-12,Argentina,,2024-06-30
+P00113,Jack Jones,T006,defender,1991-11-27,England,94596984,2027-06-30
+P00114,Diego Taylor,T006,Defender,1998-08-04,Argentina,,2025-06-30
+P00115,Alexander Johnson,T006,Centre-Back,1993-07-21,Argentina,,2027-06-30
+P00116,Karim Rice,T006,defender,2003-08-08,Argentina,13835151,2026-06-30
+P00117,William Rice,T006,Defender,2001-05-07,Belgium,61531132,
+P00118,William White,T006,Defender,1990-06-08,Germany,76276373,2028-06-30
+P00119,Harry Jackson,T006,defender,1999-03-26,Brazil,880581,2025-06-30
+P00120,Ollie Silva,T006,defender,1992-11-28,Belgium,,
+P00121,Jack Williams,T006,CM,1989-03-09,Italy,,2028-06-30
+P00122,Oliver Palmer,T006,Central Midfielder,2000-09-19,Netherlands,,2028-06-30
+P00123,Fernando Palmer,T006,CM,2003-11-01,Spain,,2027-06-30
+P00124,Alexander Harris,T006,Central Midfielder,2003-02-03,Belgium,20409029,
+P00125,Ollie Brown,T006,CM,2001-10-17,Netherlands,68353916,2024-06-30
+P00126,Carlos Anderson,T006,midfielder,2002-08-08,Argentina,61367592,2024-06-30
+P00127,Marcus Williams,T006,CM,2000-03-22,Portugal,9510480,
+P00128,Carlos Palmer,T006,Forward,2000-03-18,Spain,,2028-06-30
+P00129,Pedro Harris,T006,Striker,2000-11-25,Brazil,97279126,
+P00130,Luis Jackson,T006,ST,1992-10-17,Argentina,88645654,2024-06-30
+P00131,Rafael Palmer,T006,Forward,1997-10-08,Netherlands,75791541,2028-06-30
+P00132,James Garcia,T006,Forward,1997-01-06,France,41971222,2026-06-30
+P00133,Antoine Martinez,T007,goalkeeper,2001-02-05,Portugal,4614726,
+P00134,Rafael Williams,T007,Goalkeeper,2003-06-06,England,97350971,2028-06-30
+P00135,Pierre Harris,T007,defender,1994-10-02,Italy,37021025,2027-06-30
+P00136,Phil Palmer,T007,Centre-Back,1997-04-25,Belgium,46828316,2026-06-30
+P00137,Oliver Smith,T007,Centre-Back,2005-11-10,Germany,,2028-06-30
+P00138,Pierre Anderson,T007,CB,1995-03-25,France,44539837,
+P00139,Marcus Wilson,T007,defender,2001-09-23,England,75490607,2026-06-30
+P00140,Bukayo Rice,T007,Centre-Back,1989-08-03,Portugal,77777086,2027-06-30
+P00141,Jean Gonzalez,T007,CB,1992-07-01,Spain,23568427,2028-06-30
+P00142,Reece Fernandez,T007,Centre-Back,1992-04-14,Argentina,70825062,
+P00143,Martin Gonzalez,T007,midfielder,1999-03-03,Argentina,15804396,2025-06-30
+P00144,Thomas Rice,T007,midfielder,1996-02-05,Italy,23786644,2024-06-30
+P00145,Harry Taylor,T007,Central Midfielder,2003-11-19,Spain,84321894,2026-06-30
+P00146,Antoine Williams,T007,Central Midfielder,2003-11-10,Brazil,79879016,
+P00147,Reece Williams,T007,Central Midfielder,2003-01-02,Belgium,39030827,
+P00148,Ollie White,T007,Central Midfielder,2003-10-18,Germany,99676303,2027-06-30
+P00149,Cole Lopez,T007,CM,2004-09-05,Spain,60968188,
+P00150,Thomas Gonzalez,T007,forward,1990-04-23,Argentina,59478194,2028-06-30
+P00151,Declan Rice,T007,ST,2001-07-25,Argentina,80746882,
+P00152,Reece Jones,T007,Forward,1999-02-18,Argentina,38637561,2028-06-30
+P00153,Rafael Williams,T007,Forward,1993-06-10,Brazil,94248393,2025-06-30
+P00154,Marcus Rice,T007,Striker,1999-03-22,Portugal,99656657,2028-06-30
+P00155,William Silva,T008,goalkeeper,2000-01-12,France,29248452,2027-06-30
+P00156,Oliver Palmer,T008,GK,1991-05-28,Argentina,68640959,2028-06-30
+P00157,Gabriel Taylor,T008,defender,2001-03-06,England,93492167,2025-06-30
+P00158,Lucas Jackson,T008,Centre-Back,2000-11-24,Germany,60119341,2027-06-30
+P00159,Martin Fernandez,T008,CB,2004-04-12,Portugal,77060394,2027-06-30
+P00160,Pierre Gonzalez,T008,Centre-Back,1994-04-26,Netherlands,34054863,
+P00161,Antoine Jones,T008,Defender,2005-02-10,Portugal,,2027-06-30
+P00162,Antoine Gonzalez,T008,Defender,1996-08-12,Germany,56186520,
+P00163,Ollie Jones,T008,Centre-Back,1991-06-08,France,,2026-06-30
+P00164,James Williams,T008,Defender,1998-08-23,England,95195462,2028-06-30
+P00165,Martin Fernandez,T008,CM,1995-03-18,Germany,82222503,2024-06-30
+P00166,Cole Thomas,T008,CM,1992-01-08,Belgium,84092219,2024-06-30
+P00167,Luis Silva,T008,Midfielder,2005-10-08,Belgium,39593864,2028-06-30
+P00168,Antoine Jackson,T008,Central Midfielder,1994-11-22,Netherlands,,2024-06-30
+P00169,Luis Williams,T008,Midfielder,2001-08-02,Argentina,50603798,2024-06-30
+P00170,Karim Lopez,T008,midfielder,1992-10-24,France,18405932,
+P00171,Oliver Fernandez,T008,Central Midfielder,2004-11-06,Germany,8969210,2027-06-30
+P00172,Pierre Rodriguez,T008,Forward,1995-01-11,England,69673614,2028-06-30
+P00173,Ollie Gonzalez,T008,forward,1998-06-28,Portugal,88510774,2024-06-30
+P00174,Ollie Moore,T008,Striker,2003-07-11,Brazil,67099269,2026-06-30
+P00175,Jack Williams,T008,Forward,2002-02-14,Argentina,24720459,2026-06-30
+P00176,Jean Johnson,T008,ST,1998-08-20,Argentina,22866682,2026-06-30
+P00177,Declan Wilson,T009,goalkeeper,2002-05-21,Argentina,8198469,
+P00178,Harry Williams,T009,goalkeeper,1994-01-05,Germany,91511547,2024-06-30
+P00179,Luis Gonzalez,T009,CB,2000-07-19,Italy,,2027-06-30
+P00180,James Garcia,T009,Defender,1993-09-12,Italy,87682566,2024-06-30
+P00181,Pedro Thomas,T009,Centre-Back,2006-02-09,Germany,94994355,2028-06-30
+P00182,Ollie Palmer,T009,Defender,1993-02-15,Argentina,96246886,2024-06-30
+P00183,Ollie Gonzalez,T009,CB,1991-09-18,Netherlands,40759503,2025-06-30
+P00184,Luis Jackson,T009,defender,1992-04-26,Belgium,,2024-06-30
+P00185,Diego Thomas,T009,CB,2003-09-05,Netherlands,12071646,
+P00186,Jean Taylor,T009,Centre-Back,2002-10-03,Netherlands,,2024-06-30
+P00187,Cole Brown,T009,CM,1993-09-21,Netherlands,17818510,2024-06-30
+P00188,Pedro Williams,T009,midfielder,1998-03-06,Brazil,95704947,2028-06-30
+P00189,Declan Garcia,T009,midfielder,2006-05-05,Belgium,82967167,2028-06-30
+P00190,Oliver Smith,T009,midfielder,1994-11-20,Spain,81720369,2028-06-30
+P00191,Pierre Rice,T009,Midfielder,1997-11-07,Netherlands,56413331,2024-06-30
+P00192,Marcus Johnson,T009,CM,1998-08-08,France,92437914,2027-06-30
+P00193,Reece Lopez,T009,Central Midfielder,2002-08-15,Argentina,81924562,
+P00194,Alexander Taylor,T009,Striker,1993-06-17,Germany,43331009,2024-06-30
+P00195,Cole Lopez,T009,forward,1992-01-10,Belgium,83094562,2025-06-30
+P00196,Pierre Smith,T009,ST,1995-03-16,Spain,63154864,2026-06-30
+P00197,Pedro Thomas,T009,Striker,2005-08-08,Belgium,47864777,
+P00198,Alexander Gonzalez,T009,Striker,1998-09-01,Portugal,58338146,
+P00199,Marcus Wilson,T010,Goalkeeper,1990-07-02,Netherlands,26626192,2026-06-30
+P00200,Jack Wilson,T010,Goalkeeper,2006-05-27,Argentina,91821559,2025-06-30
+P00201,Antoine Johnson,T010,CB,2006-06-25,England,,2027-06-30
+P00202,Antoine Jones,T010,Defender,1993-12-11,Argentina,70203656,2028-06-30
+P00203,Cole Moore,T010,CB,1994-07-20,Netherlands,40662553,2028-06-30
+P00204,Fernando White,T010,Centre-Back,1998-08-27,Brazil,,2024-06-30
+P00205,Bruno Thomas,T010,Defender,2004-05-21,France,78141510,2024-06-30
+P00206,William Smith,T010,Centre-Back,1993-11-08,Italy,,2024-06-30
+P00207,Pierre Johnson,T010,CB,2002-03-14,France,55579923,2028-06-30
+P00208,Jean Jackson,T010,defender,2006-06-22,Argentina,51076565,2025-06-30
+P00209,Lucas Fernandez,T010,CM,1997-10-16,Brazil,33587238,2026-06-30
+P00210,Bruno Palmer,T010,midfielder,2004-06-16,Netherlands,97360153,2024-06-30
+P00211,Bukayo Williams,T010,Central Midfielder,2001-06-25,Argentina,39483895,
+P00212,Bukayo Rodriguez,T010,Central Midfielder,1997-12-16,France,72786705,2028-06-30
+P00213,Oliver Brown,T010,Midfielder,1996-04-02,Portugal,71775182,2025-06-30
+P00214,Fernando Rice,T010,CM,2004-02-22,Italy,1195441,2025-06-30
+P00215,Declan White,T010,Central Midfielder,1995-05-11,Germany,8440667,2024-06-30
+P00216,Ollie Thomas,T010,Forward,1994-07-27,France,5377451,2027-06-30
+P00217,Pedro Taylor,T010,ST,1990-01-10,Netherlands,14901654,2026-06-30
+P00218,Declan Rodriguez,T010,Striker,1993-09-15,France,15619192,2027-06-30
+P00219,Cole Anderson,T010,Forward,1999-05-19,Netherlands,26425669,2027-06-30
+P00220,Carlos Silva,T010,ST,1991-07-22,England,,2027-06-30
