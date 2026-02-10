@@ -5,7 +5,6 @@ Only extracts raw data - no transformation or cleaning.
 import polars as pl
 import json
 from pathlib import Path
-from typing import Union
 from logging import Logger, basicConfig, getLogger, INFO
 from datetime import datetime
 
@@ -15,8 +14,8 @@ def main() -> None:
     ingest_files(path=project_path / "data" / "raw", output_dir=project_path / "data" / "landing")
 
 def ingest_files(
-    path: Union[str, Path],
-    output_dir: Union[str, Path],
+    path: str,
+    output_dir: str,
 ) -> None:
     """
     Ingest files (CSV and/or JSON) found at `path`, write each as a separate
@@ -40,7 +39,7 @@ def ingest_files(
     else:
         dest.mkdir(parents=True, exist_ok=True)
 
-        files: list[Path]= list(src.iterdir())
+        files = list(src.iterdir())
 
         for file in sorted(files):
             try:
@@ -48,7 +47,6 @@ def ingest_files(
                 df = None
 
                 if suf == ".csv":
-                    # Read CSV into Polars DataFrame
                     try:
                         df: pl.DataFrame = pl.read_csv(file)
                         if len(df) == 0:
@@ -58,24 +56,22 @@ def ingest_files(
                         logger.exception("Error reading CSV %s: %s", file, e)
                         continue
                 elif suf == ".json":
-                    file_content: list[dict[str, str]] = []
+                    file_content = []
 
-                    text = file.read_text(encoding="utf-8").strip()
+                    text = file.read_text(encoding="utf-8")
                     if not text:
                         logger.warning("Empty JSON file, skipping: %s", file)
                         continue
 
-                    data_list = None
                     try:
                         parsed = json.loads(text)
-                        data_list: list[str] = [parsed]
                     except json.JSONDecodeError as e:
                         logger.exception("Failed to parse line in %s: %s", file, e)
-                        if not data_list:
+                        if not parsed:
                             logger.warning("No JSON records parsed from %s, skipping", file)
                             continue
                     
-                    file_content.append({"file": str(file), "data": json.dumps(data_list, ensure_ascii=False)})
+                    file_content.append({"file": str(file), "data": json.dumps(parsed, ensure_ascii=False)})
                     try:
                         df = pl.DataFrame(file_content)
                     except Exception as e:
