@@ -1,20 +1,34 @@
 """
-Data validation module using Pydantic for data quality checks.
-Validates raw data against defined schemas and business rules.
+Data validation script using Pydantic for data quality checks.
+Validates landing data against defined schemas and business rules.
 """
 from pydantic import BaseModel, Field, field_validator, model_validator, ValidationError
 from typing import Dict, List, Optional, Any
 from datetime import datetime
 import polars as pl
-import json
 from pathlib import Path
-import logging
+from logging import Logger, basicConfig, FileHandler, Formatter, getLogger, INFO
+from ingestion import load_from_landing
 
 
 # Define main paths
 project_path: Path = Path(__file__).resolve().parents[1]
 validation_path = project_path / "outputs" / "logs" / "validation"
 validation_path.mkdir(parents=True, exist_ok=True)
+
+
+# Set up logging
+basicConfig(
+    level=INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger: Logger = getLogger(name="Validation")
+
+timestamp: str = datetime.now().strftime("%Y%m%d%H%M%S%f")
+handler = FileHandler(validation_path / f"validation_log_{timestamp}.log", encoding="utf-8")
+handler.setLevel(INFO)
+handler.setFormatter(Formatter(fmt = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+logger.addHandler(handler)
 
 
 # Pydantic models for each dataset to enforce schema and business rules
@@ -184,62 +198,7 @@ class MatchEvent(BaseModel):
         return self
 
 
-# Set up logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger: logging.Logger = logging.getLogger(name="Validation")
-
-timestamp: str = datetime.now().strftime("%Y%m%d%H%M%S%f")
-handler = logging.FileHandler(validation_path / f"validation_log_{timestamp}.log", encoding="utf-8")
-handler.setLevel(logging.INFO)
-handler.setFormatter(logging.Formatter(fmt = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-logger.addHandler(handler)
-
-
 # Main validation logic
-def main():
-    results = load_and_validate_data()
-    create_validation_report(results)
-
-def load_and_validate_data():
-    """
-    Loads data and starts data validation.
-    """
-    logger.info("Starting data validation...")
-
-    validation_results = {}
-
-    teams_df = pl.scan_parquet(project_path / "data/landing/teams_*.parquet").collect()
-    validation_results["teams"] = validate_teams(teams_df)
-
-    players_df = pl.scan_parquet(project_path / "data/landing/players_*.parquet").collect()
-    validation_results["players"] = validate_players(players_df)
-
-    players_match_stats_df = pl.scan_parquet(project_path / "data/landing/player_match_stats_*.parquet").collect()
-    validation_results["player_match_stats"] = validate_player_match_stats(players_match_stats_df)
-
-    matches_file = pl.scan_parquet(project_path / "data/landing/matches_*.parquet").collect()
-    matches_rows = pl.DataFrame()
-    for row in matches_file.iter_rows(named=True):
-        match = json.loads(row["data"])
-        matches_rows = pl.concat([matches_rows, pl.DataFrame(match)])
-    validation_results["matches"] = validate_matches(matches_rows)
-
-    match_events_file: pl.DataFrame = pl.scan_parquet(project_path / "data/landing/match_events_*.parquet").collect()
-    match_events_rows = pl.DataFrame()
-    for row in match_events_file.iter_rows(named=True):
-        match_events = json.loads(row["data"])
-        match_events_rows = pl.concat([match_events_rows, pl.DataFrame(match_events)])
-    validation_results["match_events"] = validate_match_events(match_events_rows)
-    
-    logger.info("Validation finished. See validation report for mor information.")
-    logger.removeHandler(handler)
-    handler.close()
-
-    return validation_results
-
 def validate_teams(teams_df: pl.DataFrame) -> Dict[str, Any]:
     """
     Validate teams dataset.
@@ -265,9 +224,9 @@ def validate_teams(teams_df: pl.DataFrame) -> Dict[str, Any]:
         return results
     
     # Check for duplicate team ids
-    duplicate_ids = teams_df.group_by("team_id").agg(pl.len()).filter(pl.col("len") > 1)
-    if len(duplicate_ids) > 0:
-        results["warnings"].append(f"Duplicate team IDs found: {duplicate_ids['team_id'].to_list()}")
+    duplicates = teams_df.group_by("team_id").agg(count = pl.len()).filter(pl.col("count") > 1)
+    if len(duplicates) > 0:
+        results["warnings"].append(f"Found {len(duplicates)} duplicate team ids: {duplicates['team_id'].to_list()}")
     
     # Validate each team row
     for i, row in enumerate(teams_df.to_dicts()):
@@ -287,12 +246,13 @@ def validate_teams(teams_df: pl.DataFrame) -> Dict[str, Any]:
 
     return results
 
-def validate_players(players_df: pl.DataFrame) -> Dict[str, Any]:
+def validate_players(players_df: pl.DataFrame, team_id_list: list) -> Dict[str, Any]:
     """
     Validate players data.
     
     Args:
         players_df: Players DataFrame.
+        team_id_list: List of team_ids for checking orphaned records.
         
     Returns:
         Dict with players data validation results.
@@ -311,6 +271,18 @@ def validate_players(players_df: pl.DataFrame) -> Dict[str, Any]:
     if players_df.is_empty():
         results["warnings"].append("Players dataset is empty")
         return results
+
+    # Check for orphaned player records
+    orp_players = players_df.filter(
+            pl.col("team_id").is_in(team_id_list).not_()
+        )
+    if len(orp_players) > 0:
+        results["warnings"].append(f"Found {len(orp_players)} orphaned team ids: {orp_players['team_id'].to_list()}")
+
+    # Check for duplicate player ids
+    duplicates = players_df.group_by("player_id").agg(count = pl.len()).filter(pl.col("count") > 1)
+    if len(duplicates) > 0:
+        results["warnings"].append(f"Found {len(duplicates)} duplicate player ids: {duplicates['player_id'].to_list()}")
     
     # Check position labels
     if "position" in players_df.columns:
@@ -376,6 +348,11 @@ def validate_matches(matches_df: pl.DataFrame) -> Dict[str, Any]:
         results["warnings"].append("Matches dataset is empty")
         return results
     
+    # Check for duplicate match ids
+    duplicates = matches_df.group_by("match_id").agg(count = pl.len()).filter(pl.col("count") > 1)
+    if len(duplicates) > 0:
+        results["warnings"].append(f"Found {len(duplicates)} duplicate match ids: {duplicates['match_id'].to_list()}")
+    
     # Validate each match row
     for i, row in enumerate(matches_df.to_dicts()):
         try:
@@ -393,12 +370,14 @@ def validate_matches(matches_df: pl.DataFrame) -> Dict[str, Any]:
 
     return results
 
-def validate_player_match_stats(stats_df: pl.DataFrame) -> Dict[str, Any]:
+def validate_player_match_stats(stats_df: pl.DataFrame, player_id_list: list, match_id_list: list) -> Dict[str, Any]:
     """
     Validate player match statistics.
     
     Args:
         stats_df: Player match stats DataFrame.
+        player_id_list: List of player_ids for checking orphaned records.
+        match_id_list: List of match_ids for checking orphaned records.
         
     Returns:
         Dict with player match stats validation results.
@@ -416,6 +395,19 @@ def validate_player_match_stats(stats_df: pl.DataFrame) -> Dict[str, Any]:
     if stats_df.is_empty():
         results["warnings"].append("Player match stats dataset is empty")
         return results
+
+    # Check for orphaned player stats records
+    orp_players = stats_df.filter(
+            pl.col("player_id").is_in(player_id_list).not_()
+        )
+    if len(orp_players) > 0:
+        results["warnings"].append(f"Found {len(orp_players)} orphaned player ids: {orp_players['player_id'].to_list()}")
+
+    orp_matches = stats_df.filter(
+            pl.col("match_id").is_in(match_id_list).not_()
+        )
+    if len(orp_matches) > 0:
+        results["warnings"].append(f"Found {len(orp_matches)} orphaned match ids: {orp_matches['match_id'].to_list()}")
     
     # Validate each player match stats row
     for i, row in enumerate(stats_df.to_dicts()):
@@ -435,13 +427,16 @@ def validate_player_match_stats(stats_df: pl.DataFrame) -> Dict[str, Any]:
 
     return results
 
-def validate_match_events(events_df: pl.DataFrame) -> Dict[str, Any]:
+def validate_match_events(events_df: pl.DataFrame, match_id_list: list, team_id_list: list, player_id_list: list) -> Dict[str, Any]:
     """
     Validate match events dataset.
     
     Args:
         events_df: Match events DataFrame.
-        
+        match_id_list: List of match_ids for checking orphaned records.
+        team_id_list: List of team_ids for checking orphaned records.
+        player_id_list: List of player_ids for checking orphaned records.
+
     Returns:
         Dict with match events data validation results.
     """
@@ -458,12 +453,31 @@ def validate_match_events(events_df: pl.DataFrame) -> Dict[str, Any]:
     if events_df.is_empty():
         results["warnings"].append("Match events dataset is empty")
         return results
+
+    # Check for orphaned match event records
+    orp_matches = events_df.filter(
+            pl.col("match_id").is_in(match_id_list).not_()
+        )
+    if len(orp_matches) > 0:
+        results["warnings"].append(f"Found {len(orp_matches)} orphaned match ids: {orp_matches['match_id'].to_list()}")
     
+    orp_teams = events_df.filter(
+            pl.col("team_id").is_in(team_id_list).not_()
+        )
+    if len(orp_teams) > 0:
+        results["warnings"].append(f"Found {len(orp_teams)} orphaned team ids: {orp_teams['team_id'].to_list()}")
+    
+    orp_players = events_df.filter(
+            pl.col("player_id").is_in(player_id_list).not_()
+        )
+    if len(orp_players) > 0:
+        results["warnings"].append(f"Found {len(orp_players)} orphaned player ids: {orp_players['player_id'].to_list()}")
+
     # Check for duplicate event_ids
     if "event_id" in events_df.columns:
-        duplicates = events_df.group_by("event_id").agg(pl.len()).filter(pl.col("len") > 1)
+        duplicates = events_df.select("event_id").group_by("event_id").agg(count = pl.len()).filter(pl.col("count") > 1)
         if len(duplicates) > 0:
-            results["warnings"].append(f"Found {len(duplicates)} duplicate event IDs")
+            results["warnings"].append(f"Found {len(duplicates)} duplicate event ids: {duplicates['event_id'].to_list()}")
     
     # Validate each match events row
     for i, row in enumerate(events_df.to_dicts()):
@@ -481,6 +495,33 @@ def validate_match_events(events_df: pl.DataFrame) -> Dict[str, Any]:
     logger.info("Match events data validation finished with %d valid rows and %d invalid rows.", results["valid_rows"], results["invalid_rows"])
 
     return results
+
+def load_and_validate_data():
+    """
+    Loads data and starts data validation.
+    """
+    datasets = load_from_landing()
+
+    validation_results = {}
+    validation_results["teams"] = validate_teams(datasets["teams"].collect())
+    validation_results["players"] = validate_players(
+            datasets["players"].collect(), 
+            datasets["teams"].select("team_id").collect()
+        )
+    validation_results["matches"] = validate_matches(datasets["matches"].collect())
+    validation_results["player_match_stats"] = validate_player_match_stats(
+            datasets["player_match_stats"].collect(),
+            datasets["players"].select("player_id").collect(),
+            datasets["matches"].select("match_id").collect()
+        )
+    validation_results["match_events"] = validate_match_events(
+            datasets["match_events"].collect(),
+            datasets["matches"].select("match_id").collect(),
+            datasets["teams"].select("team_id").collect(),
+            datasets["players"].select("player_id").collect()
+        )
+
+    return validation_results
 
 def create_validation_report(results_df: dict[str, dict[str, Any]]):
     """
@@ -525,8 +566,26 @@ def create_validation_report(results_df: dict[str, dict[str, Any]]):
     lines.append("=" * 80)
     lines.append("")
 
-    report_path.write_text("\n".join(lines), encoding="utf-8")
-    logger.info("Validation report written to %s", report_path)
+    try:
+        report_path.write_text("\n".join(lines), encoding="utf-8")
+        logger.info("Validation report written to %s", report_path)
+    except Exception as e:
+        logger.exception("Failed to write validation report to %s: %s", report_path, e)
+
+def main():
+    logger.info("Starting raw data validation...")
+    try:
+        results = load_and_validate_data()
+        create_validation_report(results)
+        logger.info("Data validation step finished! See validation report for more information.")
+    except Exception as e:
+        logger.exception("Validation failed with an unexpected error: %s", e)
+    finally:
+        try:
+            logger.removeHandler(handler)
+            handler.close()
+        except Exception as e:
+            logger.exception("Failed to close validation file handler: %s", e)
 
 if __name__ == "__main__":
     main()
