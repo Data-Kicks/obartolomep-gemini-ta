@@ -167,9 +167,9 @@ def main() -> None:
 
     try:
         ingest_from_raw(path=project_path / "data" / "raw", output_dir=project_path / "data" / "landing")
-        logger.info("Data ingestion step finished. See ingestion report for more information.")
+        logger.info("Data ingestion step finished. See ingestion log for more information.")
     except Exception as e:
-        logger.exception("Ingestion failed with an unexpected error: %s", e)
+        logger.exception("Ingestion step failed with an unexpected error: %s", e)
     finally:
         try:
             logger.removeHandler(handler)

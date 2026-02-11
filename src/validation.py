@@ -409,6 +409,18 @@ def validate_player_match_stats(stats_df: pl.DataFrame, player_id_list: list, ma
     if len(orp_matches) > 0:
         results["warnings"].append(f"Found {len(orp_matches)} orphaned match ids: {orp_matches['match_id'].to_list()}")
     
+    # Check for duplicate event_ids
+    if ("player_id" in stats_df.columns) & ("match_id" in stats_df.columns):
+        duplicates = (stats_df.select(["player_id", "match_id"])
+                              .group_by(["player_id", "match_id"])
+                              .agg(count = pl.len()).filter(pl.col("count") > 1))
+        if len(duplicates) > 0:
+            duplicates = duplicates.with_columns(pl.concat_str([
+                    pl.col("player_id"), 
+                    pl.col("match_id")
+                ], separator= "-").alias("player_match_id"))
+            results["warnings"].append(f"Found {len(duplicates)} duplicate player_match ids: {duplicates['player_match_id'].to_list()}")
+
     # Validate each player match stats row
     for i, row in enumerate(stats_df.to_dicts()):
         try:
@@ -542,7 +554,7 @@ def create_validation_report(results_df: dict[str, dict[str, Any]]):
         valid = results.get("valid_rows", 0)
         validity_pct = (valid / total * 100) if total > 0 else 0.0
         lines.append(f"{dataset_name.upper()}:")
-        lines.append(f"  Rows: {total:,} | Valid: {valid:,} ({validity_pct:.1f}%)")
+        lines.append(f"  Rows: {total:,} | Correct: {valid:,} ({validity_pct:.1f}%)")
 
         if results.get("warnings"):
             lines.append(f"  Warnings: {len(results['warnings'])}")
@@ -579,7 +591,7 @@ def main():
         create_validation_report(results)
         logger.info("Data validation step finished! See validation report for more information.")
     except Exception as e:
-        logger.exception("Validation failed with an unexpected error: %s", e)
+        logger.exception("Validation step failed with an unexpected error: %s", e)
     finally:
         try:
             logger.removeHandler(handler)

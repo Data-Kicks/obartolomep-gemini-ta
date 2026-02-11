@@ -10,6 +10,7 @@ from logging import Logger, basicConfig, FileHandler, Formatter, getLogger, INFO
 from pathlib import Path
 from dateutil.parser import parse
 from ingestion import load_from_landing
+import duckdb
 
 
 # Define main paths
@@ -196,33 +197,38 @@ def transform_player_match_stats(stats_df: pl.LazyFrame, player_id_list: list, m
     """
     logger.info("Transforming player match stats...")
 
-    # Filter out orphaned records
-    stats_df = stats_df.filter(
-        pl.col("player_id").is_in(player_id_list) &
-        pl.col("match_id").is_in(match_id_list)
-    )
+    try:
+        # Filter out orphaned records
+        stats_df = stats_df.filter(
+            pl.col("player_id").is_in(player_id_list) &
+            pl.col("match_id").is_in(match_id_list)
+        )
 
-    # Fix negative xG values
-    stats_df = stats_df.with_columns(
-        pl.when(pl.col("xg") < 0)
-        .then(pl.lit(None))
-        .otherwise(pl.col("xg"))
-        .alias("xg")
-    )
+        # Fix negative xG values
+        stats_df = stats_df.with_columns(
+            pl.when(pl.col("xg") < 0)
+            .then(pl.lit(None))
+            .otherwise(pl.col("xg"))
+            .alias("xg")
+        )
 
-    # Fix xG > shots
-    stats_df = stats_df.with_columns(
-        pl.when(pl.col("xg") > pl.col("shots"))
-        .then(pl.lit(None))
-        .otherwise(pl.col("xg"))
-        .alias("xg")
-    )
+        # Fix xG > shots
+        stats_df = stats_df.with_columns(
+            pl.when(pl.col("xg") > pl.col("shots"))
+            .then(pl.lit(None))
+            .otherwise(pl.col("xg"))
+            .alias("xg")
+        )
 
-    # Remove duplicates
-    stats_df = stats_df.unique(subset=["player_id", "match_id"], keep="last").collect()
-    
-    logger.info(f"Player match stats transformed: {len(stats_df)} rows")
-    return stats_df
+        # Remove duplicates
+        stats_df = stats_df.unique(subset=["player_id", "match_id"], keep="last").collect()
+        
+        logger.info(f"Player match stats transformed: {len(stats_df)} rows")
+        return stats_df
+    except Exception as e:
+        logger.exception("Error transforming player match stats: %s", e)
+        return pl.DataFrame()
+
 
 def transform_match_events(events_df: pl.LazyFrame, match_id_list: list, team_id_list: list, player_id_list: list) -> pl.DataFrame:
     """
@@ -239,18 +245,22 @@ def transform_match_events(events_df: pl.LazyFrame, match_id_list: list, team_id
     """
     logger.info("Transforming match events...")
 
-    # Filter out orphaned records
-    events_df = events_df.filter(
-        pl.col("match_id").is_in(match_id_list) &
-        pl.col("team_id").is_in(team_id_list) &
-        pl.col("player_id").is_in(player_id_list)
-    )
+    try:
+        # Filter out orphaned records
+        events_df = events_df.filter(
+            pl.col("match_id").is_in(match_id_list) &
+            pl.col("team_id").is_in(team_id_list) &
+            pl.col("player_id").is_in(player_id_list)
+        )
 
-    # Remove duplicate event_ids
-    events_df = events_df.unique(subset=["event_id"], keep="last").collect()
-    
-    logger.info(f"Match events transformed: {len(events_df)} rows")
-    return events_df
+        # Remove duplicate event_ids
+        events_df = events_df.unique(subset=["event_id"], keep="last").collect()
+        
+        logger.info(f"Match events transformed: {len(events_df)} rows")
+        return events_df
+    except Exception as e:
+        logger.exception("Error transforming match events data: %s", e)
+        return pl.DataFrame()
 
 def transform_all(datasets: Dict[str, pl.LazyFrame]) -> Dict[str, pl.DataFrame]:
     """
@@ -289,15 +299,83 @@ def transform_all(datasets: Dict[str, pl.LazyFrame]) -> Dict[str, pl.DataFrame]:
     
     return transformed
 
+def save_data_to_db(datasets: Dict[str, pl.DataFrame]):
+        """
+        Save transformed data to a DuckDB database.
+        
+        Args:
+            datasets: Transformed DataFrames.
+        """        
+        logger.info(f"Saving data to DuckDB: {db_path}")
+
+        conn = duckdb.connect(str(db_path))
+        
+        try:
+            dimensions = ["teams", "players", "matches"]
+            facts = ["player_match_stats", "match_events"]
+
+            for name, df in datasets.items():
+                if df.is_empty():
+                    logger.warning(f"Skipping empty dataset: {name}")
+                    continue
+                
+                if name in dimensions:
+                    table_name = f"dim_{name}"
+                elif name in facts:
+                    table_name = f"fact_{name}"
+                else:
+                    table_name = f"{name}"        
+                            
+                # Register the DataFrame with DuckDB
+                conn.register(f"temp_{name}", df.to_arrow())
+                
+                # Check if table already exists
+                result = conn.execute(f"""
+                            SELECT COUNT(*) FROM information_schema.tables 
+                            WHERE table_name = '{table_name}'
+                         """).fetchone()
+                
+                exists_flg = result[0] > 0 if result else False
+
+                query = ""
+                if exists_flg:
+                    # Upsert rows
+                    query = f"""
+                        INSERT OR REPLACE INTO {table_name} 
+                        SELECT * FROM temp_{name}
+                    """
+                    conn.execute(query)
+                else:
+                    # Create or table
+                    query = f"""CREATE TABLE {table_name}"""
+                    conn.execute(query)
+                    
+                # Clean up temporary view
+                conn.execute(f"DROP VIEW IF EXISTS temp_{name}")
+            
+            logger.info(f"All data saved to {db_path}")
+            
+        except Exception as e:
+            logger.error(f"Error data saving to database: {e}")
+            raise
+        finally:
+            conn.close()
+
 def main() -> None:
     logger.info("Starting raw data transformation...")
-
-    datasets = load_from_landing()
-    transformed = transform_all(datasets)
-
-    logger.info("Data transformation step finished! See transformation report for mor information.")
-    logger.removeHandler(handler)
-    handler.close()
+    
+    try:
+        datasets = load_from_landing()
+        transformed = transform_all(datasets)
+        save_data_to_db(transformed)
+    except Exception as e:
+            logger.exception("Transformation step failed with an unexpected error: %s", e)
+    finally:
+        try:
+            logger.removeHandler(handler)
+            handler.close()
+        except Exception as e:
+            logger.exception("Failed to close transformation file handler: %s", e)
 
 if __name__ == "__main__":
     main()
