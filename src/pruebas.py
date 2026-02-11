@@ -6,5 +6,5 @@ db_path = project_path / "data" / "processed" / "scouting.duckdb"
 
 conn = duckdb.connect(str(db_path))
 
-result = conn.execute("""SELECT * FROM matches""").fetch_df()
+result = conn.execute("""SELECT * FROM agg_player_stats""").fetch_df()
 print(result)

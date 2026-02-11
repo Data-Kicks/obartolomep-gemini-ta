@@ -11,6 +11,7 @@ from pathlib import Path
 from dateutil.parser import parse
 from ingestion import load_from_landing
 import duckdb
+from db_utils import get_table_type, table_queries
 
 
 # Define main paths
@@ -311,20 +312,12 @@ def save_data_to_db(datasets: Dict[str, pl.DataFrame]):
         conn = duckdb.connect(str(db_path))
         
         try:
-            dimensions = ["teams", "players", "matches"]
-            facts = ["player_match_stats", "match_events"]
-
             for name, df in datasets.items():
                 if df.is_empty():
                     logger.warning(f"Skipping empty dataset: {name}")
                     continue
                 
-                if name in dimensions:
-                    table_name = f"dim_{name}"
-                elif name in facts:
-                    table_name = f"fact_{name}"
-                else:
-                    table_name = f"{name}"        
+                table_name = get_table_type(name) + "_" + name      
                             
                 # Register the DataFrame with DuckDB
                 conn.register(f"temp_{name}", df.to_arrow())
@@ -347,7 +340,13 @@ def save_data_to_db(datasets: Dict[str, pl.DataFrame]):
                     conn.execute(query)
                 else:
                     # Create or table
-                    query = f"""CREATE TABLE {table_name}"""
+                    query = table_queries[name]
+                    conn.execute(query)
+
+                    query = f"""
+                        INSERT INTO {table_name} 
+                        SELECT * FROM temp_{name}
+                    """                        
                     conn.execute(query)
                     
                 # Clean up temporary view
@@ -356,7 +355,7 @@ def save_data_to_db(datasets: Dict[str, pl.DataFrame]):
             logger.info(f"All data saved to {db_path}")
             
         except Exception as e:
-            logger.error(f"Error data saving to database: {e}")
+            logger.error(f"Error saving data to database: {e}")
             raise
         finally:
             conn.close()
