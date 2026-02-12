@@ -85,6 +85,25 @@ def parse_date(date_str: Optional[str]) -> Optional[str]:
         logger.warning(f"Could not parse date: {date_str}")
         return None
 
+def calculate_age(date_of_birth: str):
+    """ 
+    Calculate age from date of birth. 
+    
+    Args: 
+        date_of_birth: Date of birth string in 'YYYY-MM-DD' format. 
+        
+    Returns: Age in years or None if invalid. 
+    """ 
+    try: 
+        dob = datetime.strptime(parse_date(date_of_birth), "%Y-%m-%d")
+        today = datetime.today() 
+        age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day)) 
+        
+        return age 
+    except Exception as e: 
+        logger.warning(f"error calculating age from date_of_birth: {date_of_birth}, error: {e}") 
+        return None
+
 def transform_teams(teams_df: pl.LazyFrame) -> pl.DataFrame:
     """
     Clean teams data (only remove duplicates).
@@ -147,12 +166,17 @@ def transform_players(players_df: pl.LazyFrame, team_id_list: list) -> pl.DataFr
         
         # Remove duplicates
         players_df = players_df.unique(subset=["player_id"], keep="last").collect()
+
+        # Create new columns
+        players_df = players_df.with_columns(
+            pl.col("date_of_birth").map_elements(calculate_age).alias("age")
+        )
         
         logger.info(f"Players transformed: {len(players_df)} rows, {len(players_df.columns)} columns")
         return players_df
     except Exception as e:
         logger.exception("Error transforming players data: %s", e)
-        return pl.DataFrame()
+        return pl.DataFrame()    
 
 def transform_matches(matches_df: pl.LazyFrame) -> pl.DataFrame:
     """
@@ -223,6 +247,12 @@ def transform_player_match_stats(stats_df: pl.LazyFrame, player_id_list: list, m
 
         # Remove duplicates
         stats_df = stats_df.unique(subset=["player_id", "match_id"], keep="last").collect()
+
+        # Create new columns
+        stats_df = stats_df.with_columns(
+            (pl.col("goals") + pl.col("assists")).alias("goal_contributions"),
+            (pl.col("goals") - pl.col("xg")).alias("g_xg")
+        )
         
         logger.info(f"Player match stats transformed: {len(stats_df)} rows")
         return stats_df
