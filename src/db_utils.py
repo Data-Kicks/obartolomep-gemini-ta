@@ -127,6 +127,21 @@ agg_players_query = """CREATE OR REPLACE TABLE agg_player_stats_sql AS
                                         ELSE NULL END
                                     , 2) AS shot_accuracy,
                                     ROUND(
+                                        CASE WHEN SUM(minutes_played) > 0
+                                        THEN SUM(passes_attempted) / SUM(minutes_played) * 90
+                                        ELSE NULL END
+                                    , 2) AS passes_attempted_90,
+                                    ROUND(
+                                        CASE WHEN SUM(minutes_played) > 0
+                                        THEN SUM(passes_completed) / SUM(minutes_played) * 90
+                                        ELSE NULL END
+                                    , 2) AS passes_completed_90,
+                                    ROUND(
+                                        CASE WHEN SUM(minutes_played) > 0
+                                        THEN SUM(key_passes) / SUM(minutes_played) * 90
+                                        ELSE NULL END
+                                    , 2) AS key_passes_90,
+                                    ROUND(
                                         CASE WHEN SUM(passes_attempted) > 0
                                         THEN SUM(passes_completed) / SUM(passes_attempted)
                                         ELSE NULL END
@@ -229,6 +244,7 @@ teams_top3_query = """WITH agg_player_stats_with_league AS (
                             a.team_name,
                             a.position,
                             a.age,
+                            a.minutes_played,
                             a.goals,
                             a.assists,
                             a.goal_contribution,
@@ -252,6 +268,7 @@ teams_top3_query = """WITH agg_player_stats_with_league AS (
                             name as player_name,
                             position,
                             age,
+                            minutes_played,
                             goals,
                             assists,
                             goal_contribution

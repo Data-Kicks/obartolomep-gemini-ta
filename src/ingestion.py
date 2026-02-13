@@ -147,7 +147,7 @@ def load_from_landing(l_path:Path = None) -> Dict[str, pl.LazyFrame]:
         teams_df = pl.scan_parquet(landing_path / "teams_*.parquet")
         datasets["teams"] = teams_df
     except Exception as e:
-        logger.exception("Error while loading teams: %s", e)
+        logger.exception("Error while loading teams, check if landing folder contains teams parquet files: %s", e)
         datasets["teams"] = pl.LazyFrame()
         pass
 
@@ -155,7 +155,7 @@ def load_from_landing(l_path:Path = None) -> Dict[str, pl.LazyFrame]:
         players_df = pl.scan_parquet(landing_path / "players_*.parquet")
         datasets["players"] = players_df
     except Exception as e:
-        logger.exception("Error while loading players: %s", e)
+        logger.exception("Error while loading players, check if landing folder contains players parquet files: %s", e)
         datasets["players"] = pl.LazyFrame()
         pass
 
@@ -163,7 +163,7 @@ def load_from_landing(l_path:Path = None) -> Dict[str, pl.LazyFrame]:
         players_match_stats_df = pl.scan_parquet(landing_path / "player_match_stats_*.parquet")
         datasets["player_match_stats"] = players_match_stats_df
     except Exception as e:
-        logger.exception("Error while loading player_match_stats: %s", e)
+        logger.exception("Error while loading player_match_stats, check if landing folder contains player_match_stats parquet files: %s", e)
         datasets["player_match_stats"] = pl.LazyFrame()
         pass
 
@@ -175,7 +175,7 @@ def load_from_landing(l_path:Path = None) -> Dict[str, pl.LazyFrame]:
             matches_rows = pl.concat([matches_rows, pl.DataFrame(match)])
         datasets["matches"] = matches_rows.lazy()
     except Exception as e:
-        logger.exception("Error while loading matches: %s", e)
+        logger.exception("Error while loading matches, check if landing folder contains matches parquet files: %s", e)
         datasets["matches"] = pl.LazyFrame()
         pass
 
@@ -187,7 +187,7 @@ def load_from_landing(l_path:Path = None) -> Dict[str, pl.LazyFrame]:
             match_events_rows = pl.concat([match_events_rows, pl.DataFrame(match_events)])
         datasets["match_events"] = match_events_rows.lazy()
     except Exception as e:
-        logger.exception("Error while loading match_events: %s", e)
+        logger.exception("Error while loading match_events. Check if landing folder contains match_events parquet files: %s", e)
         datasets["match_events"] = pl.LazyFrame()
         pass
 

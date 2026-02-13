@@ -5,14 +5,18 @@ Also includes some functionalities for filtering database tables and custom quer
 import polars as pl
 from pathlib import Path
 from typing import Optional
+from datetime import datetime
 import duckdb
 from logging import Logger, getLogger
 from db_utils import agg_players_query, teams_summary_query, teams_top3_query
+
 
 # Define main paths
 project_path: Path = Path(__file__).resolve().parents[1]
 db_path = project_path / "data" / "processed" / "scouting.duckdb"
 db_path.parent.mkdir(parents=True, exist_ok=True)
+analysis_path = project_path / "outputs" / "analysis"
+analysis_path.mkdir(parents=True, exist_ok=True)
 
 
 # Set up logging
@@ -78,6 +82,21 @@ def create_player_aggregated_view(query_type: str = "polars") -> None:
                 .otherwise(None)
                 .round(2)
                 .alias("shot_accuracy")),
+            (pl.when(pl.col("minutes_played") > 0)
+                .then(pl.col("passes_attempted") / pl.col("minutes_played") * 90)
+                .otherwise(None)
+                .round(2)
+                .alias("passes_attempted_90")),
+            (pl.when(pl.col("minutes_played") > 0)
+                .then(pl.col("passes_completed") / pl.col("minutes_played") * 90)
+                .otherwise(None)
+                .round(2)
+                .alias("passes_completed_90")),
+            (pl.when(pl.col("minutes_played") > 0)
+                .then(pl.col("key_passes") / pl.col("minutes_played") * 90)
+                .otherwise(None)
+                .round(2)
+                .alias("key_passes_90")),
             (pl.when(pl.col("passes_attempted") > 0)
                 .then(pl.col("passes_completed") / pl.col("passes_attempted"))
                 .otherwise(None)
@@ -216,8 +235,14 @@ def filter_players(query_type: str = "polars",
                    assists_90_max: Optional[float] = None,
                    shot_accuracy_min: float = 0.0,
                    shot_accuracy_max: Optional[float] = None,
+                   passes_attempted_90_min: float = 0.0,
+                   passes_attempted_90_max: Optional[float] = None,
+                   passes_completed_90_min: float = 0.0,
+                   passes_completed_90_max: Optional[float] = None,
                    pass_accuracy_min: float = 0.0,
                    pass_accuracy_max: Optional[float] = None,
+                   key_passes_90_min: float = 0.0,
+                   key_passes_90_max: Optional[float] = None,
                    tackles_90_min: float = 0.0,
                    tackles_90_max: Optional[float] = None,
                    interceptions_90_min: float = 0.0,
@@ -274,6 +299,9 @@ def filter_players(query_type: str = "polars",
         "goals_90": (goals_90_min, goals_90_max),
         "assists_90": (assists_90_min, assists_90_max),
         "shot_accuracy": (shot_accuracy_min, shot_accuracy_max),
+        "passes_attempted_90": (passes_attempted_90_min, passes_attempted_90_max),
+        "passes_completed_90": (passes_completed_90_min, passes_completed_90_max),
+        "key_passes_90": (key_passes_90_min, key_passes_90_max),
         "pass_accuracy": (pass_accuracy_min, pass_accuracy_max),
         "tackles_90": (tackles_90_min, tackles_90_max),
         "interceptions_90": (interceptions_90_min, interceptions_90_max),
@@ -336,7 +364,7 @@ def filter_players(query_type: str = "polars",
     else: 
         raise ValueError(f"Invalid query type: {query_type}. Supported types are 'polars' and 'sql'.")
 
-def get_team_summary(query_type: str = "polars", team_id: Optional[int] = None) -> pl.DataFrame: 
+def get_team_summary(query_type: str = "polars", team_id: Optional[str] = None) -> pl.DataFrame: 
     """ 
     Function to get a summary of the team main statistics. 
     
@@ -447,7 +475,7 @@ def get_team_summary(query_type: str = "polars", team_id: Optional[int] = None) 
     else: 
         raise ValueError(f"Invalid query type: {query_type}. Supported types are 'polars' and 'sql'.")
 
-def get_team_top3(query_type: str = None, team_id:str = None) -> pl.DataFrame:
+def get_team_top3(query_type: str = "polars", team_id:Optional[str] = None) -> pl.DataFrame:
     """
     Function to get the top 3 players in each team based on goal contribution (Goals + Assists). 
     
@@ -491,6 +519,7 @@ def get_team_top3(query_type: str = None, team_id:str = None) -> pl.DataFrame:
                     pl.col('name').alias('player_name'),
                     'position',
                     'age',
+                    'minutes_played',
                     'goals',
                     'assists',
                     'goal_contribution'
@@ -558,12 +587,48 @@ def get_team_top3(query_type: str = None, team_id:str = None) -> pl.DataFrame:
     else: 
         raise ValueError(f"Invalid query type: {query_type}. Supported types are 'polars' and 'sql'.")    
 
+def create_players_report(query_type: str = "polars"):
+    # Effective scorers report - players with at least 5 goals and a goals-xg difference of at least 2
+    timestamp: str = datetime.now().strftime("%Y%m%d%H%M%S%f")
+    effective_scorers = filter_players(query_type, goals_min=5, g_xg_min=2).select(["name", "team_name", "age", "position", "minutes_played", "goals", "g_xg"])
+    effective_scorers.write_csv(analysis_path / f"effective_scorers_{timestamp}.csv")
+    print(effective_scorers)
+
+    # Defensive midfielders report - players in midfield position with pass accuracy of at least 75%, at least 3 interceptions per 90 and a duel win rate of at least 50%
+    timestamp: str = datetime.now().strftime("%Y%m%d%H%M%S%f")
+    defensive_midfielders = (filter_players(query_type, position="Midfielder", pass_accuracy_min=0.75, interceptions_90_min=3, duel_win_rate_min=0.5)
+                                        .select(["name", "team_name", "age", "minutes_played", "pass_accuracy", "interceptions_90", "duel_win_rate"]))
+    defensive_midfielders.write_csv(analysis_path / f"defensive_midfielders_{timestamp}.csv")
+    print(defensive_midfielders)
+
+    # Creative attackers report - players with at least 2 key passes per 90 and a goal contribution per 90 of at least 0.5
+    timestamp: str = datetime.now().strftime("%Y%m%d%H%M%S%f")
+    creative_attackers = (filter_players(query_type, key_passes_90_min=2, goal_contribution_90_min=0.5)
+                                        .select(["name", "team_name", "age", "minutes_played", "key_passes_90", "goal_contribution_90"]))
+    creative_attackers.write_csv(analysis_path / f"creative_attackers_{timestamp}.csv")
+    print(creative_attackers)
+
+
+
+def create_teams_report(query_type: str = "polars", team_id:Optional[str] = None):
+    # Team summary report - Includes all metrics from the player aggregated view, aggregated at team level.
+    timestamp: str = datetime.now().strftime("%Y%m%d%H%M%S%f")
+    team_report = get_team_summary(query_type, team_id)
+    team_report.write_csv(analysis_path / f"team_summary_{team_id if team_id else 'all'}_{timestamp}.csv")
+    print(get_team_summary(query_type, team_id))
+
+    # Team top 3 report - Top 3 players in each team based on goal contribution, with their main statistics.
+    timestamp: str = datetime.now().strftime("%Y%m%d%H%M%S%f")
+    team_players_report = get_team_top3(query_type, team_id)
+    team_players_report.write_csv(analysis_path / f"team_top3_{team_id if team_id else 'all'}_{timestamp}.csv")
+    print(get_team_top3(query_type, team_id))
+
 def main():
     query_type = "polars"
     create_player_aggregated_view(query_type)
-    print(filter_players(query_type, age_max=21, goal_contribution_min = 5).select(["name", "team_name", "age", "goal_contribution"]))
-    print(get_team_summary(query_type, team_id="T001"))
-    print(get_team_top3(query_type, team_id="T001"))
+    create_players_report(query_type)
+    create_teams_report(query_type)
+    create_teams_report(query_type, team_id="T001") # Arsenal
 
 if __name__ == "__main__":
     main()

@@ -5,12 +5,12 @@ Handles all quality issues mentioned in requirements.
 """
 import polars as pl
 from datetime import datetime
+import duckdb
 from typing import Dict, Optional
 from logging import Logger, basicConfig, FileHandler, Formatter, getLogger, INFO
 from pathlib import Path
 from dateutil.parser import parse
 from ingestion import load_from_landing
-import duckdb
 from db_utils import get_table_type, table_queries
 
 
