@@ -1,0 +1,136 @@
+================================================================================
+DATA VALIDATION REPORT
+================================================================================
+
+TEAMS:
+  Rows: 10 | Correct: 10 (100.0%)
+
+PLAYERS:
+  Rows: 220 | Correct: 220 (100.0%)
+  Warnings: 1
+    - Found 15 different position labels: ['midfielder', 'CB', 'goalkeeper', 'ST', 'GK', 'Forward', 'Striker', 'defender', 'Central Midfielder', 'Defender', 'CM', 'Midfielder', 'Goalkeeper', 'Centre-Back', 'forward']
+  Null analysis:
+    - market_value: 31 (14.1%)
+    - contract_until: 44 (20.0%)
+
+MATCHES:
+  Rows: 100 | Correct: 100 (100.0%)
+
+PLAYER_MATCH_STATS:
+  Rows: 3,076 | Correct: 2,970 (96.6%)
+  Warnings: 1
+    - Found 60 orphaned player ids: ['P97882', 'P90903', 'P98978', 'P98815', 'P91264', 'P96927', 'P95591', 'P96874', 'P92433', 'P94447', 'P91526', 'P91309', 'P95828', 'P98215', 'P98514', 'P92759', 'P93375', 'P97818', 'P91957', 'P91819', 'P95404', 'P90339', 'P96759', 'P90958', 'P98162', 'P93054', 'P94155', 'P95628', 'P97682', 'P99871', 'P91137', 'P93777', 'P96125', 'P96802', 'P97970', 'P91918', 'P90679', 'P94890', 'P96343', 'P95198', 'P97032', 'P99369', 'P97002', 'P94697', 'P98413', 'P91630', 'P99380', 'P93151', 'P99089', 'P95651', 'P97802', 'P96193', 'P93071', 'P97758', 'P90564', 'P98042', 'P91162', 'P92533', 'P95008', 'P91809']
+  Errors: 106
+    - 19: Value error, xG (4.88) cannot be greater than total shots (3)
+    - 23: Value error, xG (4.08) cannot be greater than total shots (3)
+    - 46: 'xg', Input should be greater than or equal to 0
+    - 55: 'xg', Input should be greater than or equal to 0
+    - 70: 'xg', Input should be greater than or equal to 0
+    - 72: 'xg', Input should be greater than or equal to 0
+    - 134: Value error, xG (1.87) cannot be greater than total shots (1)
+    - 145: Value error, xG (3.25) cannot be greater than total shots (2)
+    - 171: Value error, xG (2.23) cannot be greater than total shots (1)
+    - 188: 'xg', Input should be greater than or equal to 0
+    - 218: 'xg', Input should be greater than or equal to 0
+    - 246: 'xg', Input should be greater than or equal to 0
+    - 369: 'xg', Input should be greater than or equal to 0
+    - 370: Value error, xG (4.15) cannot be greater than total shots (3)
+    - 419: Value error, xG (3.69) cannot be greater than total shots (2)
+    - 493: Value error, xG (1.71) cannot be greater than total shots (1)
+    - 540: 'xg', Input should be greater than or equal to 0
+    - 552: 'xg', Input should be greater than or equal to 0
+    - 554: 'xg', Input should be greater than or equal to 0
+    - 566: Value error, xG (3.66) cannot be greater than total shots (2)
+    - 636: 'xg', Input should be greater than or equal to 0
+    - 643: 'xg', Input should be greater than or equal to 0
+    - 660: Value error, xG (2.91) cannot be greater than total shots (2)
+    - 662: Value error, xG (5.34) cannot be greater than total shots (4)
+    - 759: Value error, xG (3.89) cannot be greater than total shots (3)
+    - 808: Value error, xG (1.96) cannot be greater than total shots (1)
+    - 825: Value error, xG (3.51) cannot be greater than total shots (2)
+    - 836: Value error, xG (3.55) cannot be greater than total shots (2)
+    - 843: Value error, xG (2.48) cannot be greater than total shots (1)
+    - 882: 'xg', Input should be greater than or equal to 0
+    - 885: Value error, xG (2.53) cannot be greater than total shots (1)
+    - 894: 'xg', Input should be greater than or equal to 0
+    - 910: 'xg', Input should be greater than or equal to 0
+    - 945: 'xg', Input should be greater than or equal to 0
+    - 1038: Value error, xG (2.95) cannot be greater than total shots (1)
+    - 1134: Value error, xG (5.28) cannot be greater than total shots (4)
+    - 1146: Value error, xG (1.72) cannot be greater than total shots (1)
+    - 1149: 'xg', Input should be greater than or equal to 0
+    - 1193: 'xg', Input should be greater than or equal to 0
+    - 1199: 'xg', Input should be greater than or equal to 0
+    - 1232: Value error, xG (2.52) cannot be greater than total shots (2)
+    - 1289: Value error, xG (1.63) cannot be greater than total shots (1)
+    - 1348: 'xg', Input should be greater than or equal to 0
+    - 1351: Value error, xG (3.13) cannot be greater than total shots (2)
+    - 1381: 'xg', Input should be greater than or equal to 0
+    - 1480: Value error, xG (2.56) cannot be greater than total shots (1)
+    - 1481: 'xg', Input should be greater than or equal to 0
+    - 1487: 'xg', Input should be greater than or equal to 0
+    - 1514: Value error, xG (3.75) cannot be greater than total shots (3)
+    - 1542: 'xg', Input should be greater than or equal to 0
+    - 1554: Value error, xG (2.82) cannot be greater than total shots (2)
+    - 1576: 'xg', Input should be greater than or equal to 0
+    - 1577: 'xg', Input should be greater than or equal to 0
+    - 1580: 'xg', Input should be greater than or equal to 0
+    - 1581: 'xg', Input should be greater than or equal to 0
+    - 1617: 'xg', Input should be greater than or equal to 0
+    - 1708: Value error, xG (2.16) cannot be greater than total shots (1)
+    - 1777: Value error, xG (3.88) cannot be greater than total shots (3)
+    - 1791: Value error, xG (1.75) cannot be greater than total shots (1)
+    - 1860: 'xg', Input should be greater than or equal to 0
+    - 1901: Value error, xG (1.51) cannot be greater than total shots (1)
+    - 1937: 'xg', Input should be greater than or equal to 0
+    - 1967: Value error, xG (2.55) cannot be greater than total shots (1)
+    - 2016: 'xg', Input should be greater than or equal to 0
+    - 2031: 'xg', Input should be greater than or equal to 0
+    - 2045: 'xg', Input should be greater than or equal to 0
+    - 2053: Value error, xG (3.65) cannot be greater than total shots (3)
+    - 2078: Value error, xG (4.67) cannot be greater than total shots (3)
+    - 2082: 'xg', Input should be greater than or equal to 0
+    - 2116: 'xg', Input should be greater than or equal to 0
+    - 2127: Value error, xG (2.69) cannot be greater than total shots (2)
+    - 2129: Value error, xG (1.63) cannot be greater than total shots (1)
+    - 2143: 'xg', Input should be greater than or equal to 0
+    - 2275: Value error, xG (1.81) cannot be greater than total shots (1)
+    - 2283: 'xg', Input should be greater than or equal to 0
+    - 2348: Value error, xG (3.66) cannot be greater than total shots (2)
+    - 2365: Value error, xG (3.28) cannot be greater than total shots (2)
+    - 2370: 'xg', Input should be greater than or equal to 0
+    - 2383: 'xg', Input should be greater than or equal to 0
+    - 2401: Value error, xG (2.85) cannot be greater than total shots (1)
+    - 2410: Value error, xG (2.1) cannot be greater than total shots (1)
+    - 2420: 'xg', Input should be greater than or equal to 0
+    - 2470: Value error, xG (4.33) cannot be greater than total shots (3)
+    - 2515: 'xg', Input should be greater than or equal to 0
+    - 2555: Value error, xG (3.79) cannot be greater than total shots (3)
+    - 2569: Value error, xG (1.98) cannot be greater than total shots (1)
+    - 2584: Value error, xG (2.5) cannot be greater than total shots (2)
+    - 2671: 'xg', Input should be greater than or equal to 0
+    - 2694: 'xg', Input should be greater than or equal to 0
+    - 2720: 'xg', Input should be greater than or equal to 0
+    - 2741: 'xg', Input should be greater than or equal to 0
+    - 2745: Value error, xG (2.54) cannot be greater than total shots (1)
+    - 2797: 'xg', Input should be greater than or equal to 0
+    - 2811: Value error, xG (3.8) cannot be greater than total shots (3)
+    - 2830: Value error, xG (2.2) cannot be greater than total shots (1)
+    - 2911: Value error, xG (2.51) cannot be greater than total shots (1)
+    - 2923: Value error, xG (2.57) cannot be greater than total shots (2)
+    - 2930: 'xg', Input should be greater than or equal to 0
+    - 2946: 'xg', Input should be greater than or equal to 0
+    - 2961: 'xg', Input should be greater than or equal to 0
+    - 2972: 'xg', Input should be greater than or equal to 0
+    - 2991: Value error, xG (5.43) cannot be greater than total shots (4)
+    - 2993: Value error, xG (4.71) cannot be greater than total shots (3)
+    - 3013: 'xg', Input should be greater than or equal to 0
+    - 3026: Value error, xG (2.48) cannot be greater than total shots (1)
+    - 3057: 'xg', Input should be greater than or equal to 0
+
+MATCH_EVENTS:
+  Rows: 15,150 | Correct: 15,150 (100.0%)
+  Warnings: 1
+    - Found 150 duplicate event ids: ['EM2024079_11800', 'EM2024095_14125', 'EM2024056_8262', 'EM2024080_11911', 'EM2024033_4876', 'EM2024037_5468', 'EM2024097_14437', 'EM2024083_12419', 'EM2024071_10528', 'EM2024044_6489', 'EM2024047_6941', 'EM2024070_10354', 'EM2024025_3625', 'EM2024042_6274', 'EM2024090_13356', 'EM2024041_6057', 'EM2024077_11458', 'EM2024031_4507', 'EM2024054_8005', 'EM2024006_0878', 'EM2024001_0013', 'EM2024044_6459', 'EM2024009_1287', 'EM2024038_5638', 'EM2024026_3807', 'EM2024080_11913', 'EM2024097_14527', 'EM2024032_4684', 'EM2024016_2344', 'EM2024100_14956', 'EM2024028_4189', 'EM2024074_11059', 'EM2024066_9783', 'EM2024038_5581', 'EM2024031_4610', 'EM2024084_12452', 'EM2024081_12057', 'EM2024035_5106', 'EM2024064_9559', 'EM2024019_2768', 'EM2024098_14551', 'EM2024068_10178', 'EM2024036_5346', 'EM2024019_2836', 'EM2024100_14984', 'EM2024079_11708', 'EM2024085_12738', 'EM2024082_12283', 'EM2024051_7649', 'EM2024075_11213', 'EM2024088_13063', 'EM2024025_3675', 'EM2024080_11900', 'EM2024088_13068', 'EM2024076_11276', 'EM2024079_11704', 'EM2024009_1291', 'EM2024057_8537', 'EM2024014_2074', 'EM2024062_9290', 'EM2024055_8171', 'EM2024043_6415', 'EM2024010_1414', 'EM2024071_10582', 'EM2024060_8922', 'EM2024048_7116', 'EM2024041_6039', 'EM2024051_7537', 'EM2024034_5033', 'EM2024091_13615', 'EM2024010_1497', 'EM2024041_6111', 'EM2024093_13937', 'EM2024093_13929', 'EM2024041_6041', 'EM2024045_6678', 'EM2024099_14743', 'EM2024017_2502', 'EM2024017_2497', 'EM2024017_2518', 'EM2024037_5476', 'EM2024073_10856', 'EM2024094_13981', 'EM2024042_6210', 'EM2024085_12734', 'EM2024066_9779', 'EM2024070_10458', 'EM2024091_13536', 'EM2024025_3620', 'EM2024053_7903', 'EM2024049_7248', 'EM2024028_4051', 'EM2024015_2122', 'EM2024014_2025', 'EM2024025_3749', 'EM2024048_7072', 'EM2024006_0900', 'EM2024076_11358', 'EM2024055_8217', 'EM2024024_3506', 'EM2024046_6843', 'EM2024013_1885', 'EM2024019_2749', 'EM2024057_8401', 'EM2024096_14356', 'EM2024083_12327', 'EM2024038_5554', 'EM2024053_7926', 'EM2024019_2797', 'EM2024085_12693', 'EM2024048_7162', 'EM2024047_7006', 'EM2024037_5506', 'EM2024020_2954', 'EM2024020_2911', 'EM2024009_1280', 'EM2024025_3738', 'EM2024034_4989', 'EM2024076_11368', 'EM2024013_1917', 'EM2024067_10023', 'EM2024008_1061', 'EM2024030_4450', 'EM2024087_13049', 'EM2024080_11888', 'EM2024076_11356', 'EM2024074_11042', 'EM2024057_8528', 'EM2024012_1669', 'EM2024067_9994', 'EM2024002_0171', 'EM2024025_3731', 'EM2024084_12551', 'EM2024027_3912', 'EM2024012_1723', 'EM2024004_0531', 'EM2024068_10120', 'EM2024006_0805', 'EM2024084_12503', 'EM2024045_6663', 'EM2024087_12922', 'EM2024030_4484', 'EM2024010_1449', 'EM2024025_3712', 'EM2024087_12962', 'EM2024078_11647', 'EM2024082_12194', 'EM2024041_6149', 'EM2024070_10434', 'EM2024022_3262']
+
+================================================================================

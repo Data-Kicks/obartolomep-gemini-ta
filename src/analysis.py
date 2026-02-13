@@ -185,8 +185,6 @@ def create_player_aggregated_view(query_type: str = "polars") -> None:
     else:
         raise ValueError(f"Invalid query type: {query_type}. Supported types are 'polars' and 'sql'.")
 
-
-
 def filter_players(query_type: str = "polars", 
                    position: Optional[str] = None,
                    age_min: int = 0,
@@ -588,6 +586,15 @@ def get_team_top3(query_type: str = "polars", team_id:Optional[str] = None) -> p
         raise ValueError(f"Invalid query type: {query_type}. Supported types are 'polars' and 'sql'.")    
 
 def create_players_report(query_type: str = "polars"):
+    """
+    Function to create custom player reports based on specific criteria, such as effective scorers, defensive midfielders, and creative attackers.
+    Each report is saved as a CSV file in the outputs/analysis directory.
+
+    Args:
+        query_type: "polars" to use Polars for filtering, "sql" to use a SQL query.
+    """
+    logger.info("Creating player reports...")
+
     # Effective scorers report - players with at least 5 goals and a goals-xg difference of at least 2
     timestamp: str = datetime.now().strftime("%Y%m%d%H%M%S%f")
     effective_scorers = filter_players(query_type, goals_min=5, g_xg_min=2).select(["name", "team_name", "age", "position", "minutes_played", "goals", "g_xg"])
@@ -608,20 +615,38 @@ def create_players_report(query_type: str = "polars"):
     creative_attackers.write_csv(analysis_path / f"creative_attackers_{timestamp}.csv")
     print(creative_attackers)
 
+    logger.info("Player reports created!")
+
 
 
 def create_teams_report(query_type: str = "polars", team_id:Optional[str] = None):
+    """
+    Function to create team reports, including a team summary report and a team top 3 report. 
+    Each report is saved as a CSV file in the outputs/analysis directory.
+
+    Args:
+        query_type: "polars" to use Polars for querying, "sql" to use a SQL query.
+        team_id: Optional team ID to filter the reports for a specific team. If None, creates reports for all teams.
+    """
+    logger.info(f"Creating team reports for team_id={team_id if team_id else 'all teams'}...")
+
     # Team summary report - Includes all metrics from the player aggregated view, aggregated at team level.
     timestamp: str = datetime.now().strftime("%Y%m%d%H%M%S%f")
     team_report = get_team_summary(query_type, team_id)
     team_report.write_csv(analysis_path / f"team_summary_{team_id if team_id else 'all'}_{timestamp}.csv")
     print(get_team_summary(query_type, team_id))
 
+    logger.info(f"Team summary report created for team_id={team_id if team_id else 'all teams'}.")
+
+    logger.info(f"Creating team top 3 report for team_id={team_id if team_id else 'all teams'}...")
+
     # Team top 3 report - Top 3 players in each team based on goal contribution, with their main statistics.
     timestamp: str = datetime.now().strftime("%Y%m%d%H%M%S%f")
     team_players_report = get_team_top3(query_type, team_id)
     team_players_report.write_csv(analysis_path / f"team_top3_{team_id if team_id else 'all'}_{timestamp}.csv")
     print(get_team_top3(query_type, team_id))
+
+    logger.info(f"Team top 3 report created for team_id={team_id if team_id else 'all teams'}!")
 
 def main():
     query_type = "sql"

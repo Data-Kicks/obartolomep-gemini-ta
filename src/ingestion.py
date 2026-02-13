@@ -41,6 +41,13 @@ except Exception:
     
 # Main ingestion logic
 def create_conf_database(table_name: str = "elt_config"):
+    """
+    Create configuration table in DuckDB if it doesn't exist.
+    The table will have a single column 'last_ingestion_date' to track the last date of data ingestion.
+
+    Args:
+        table_name: Name of the configuration table to create (default: 'elt_config')
+    """
     conn = duckdb.connect(str(db_path))
     try:
         conn.execute(f"""
@@ -65,9 +72,11 @@ def ingest_from_raw(
     Ingest files (CSV and/or JSON) found at `path`, write each as a separate
     Parquet file into `output_dir`.
 
-    Parameters
-    - path: directory or file path to read files from
-    - output_dir: directory where individual parquet files will be written
+    Args:
+        path: Directory or file path to read files from
+        output_dir: Directory where individual parquet files will be written
+        force: If True, ingests all files regardless of last_ingestion_date in DB. 
+               If False, only ingests files modified on or after last_ingestion_date.
     """
     src = Path(path)
     dest = Path(output_dir)

@@ -1,0 +1,31 @@
+league,team_name,player_name,position,age,minutes_played,goals,assists,goal_contribution
+Premier League,Arsenal FC,Fernando Gonzalez,Forward,29,1138.0,4.0,6.0,10.0
+Premier League,Arsenal FC,Jack Silva,Forward,27,999.0,2.0,6.0,8.0
+Premier League,Arsenal FC,William Jackson,Forward,35,629.0,3.0,4.0,7.0
+Premier League,Aston Villa,Pedro Williams,Midfielder,27,788.0,2.0,6.0,8.0
+Premier League,Aston Villa,Reece Lopez,Midfielder,23,746.0,2.0,4.0,6.0
+Premier League,Aston Villa,Pierre Smith,Forward,30,606.0,4.0,2.0,6.0
+Premier League,Brighton & Hove Albion,Cole Thomas,Midfielder,34,1057.0,6.0,6.0,12.0
+Premier League,Brighton & Hove Albion,Pierre Rodriguez,Forward,31,970.0,3.0,7.0,10.0
+Premier League,Brighton & Hove Albion,Jean Johnson,Forward,27,937.0,3.0,4.0,7.0
+Premier League,Chelsea FC,Pedro Gonzalez,Midfielder,25,1091.0,4.0,5.0,9.0
+Premier League,Chelsea FC,Gabriel Fernandez,Forward,23,891.0,4.0,3.0,7.0
+Premier League,Chelsea FC,Martin Jones,Midfielder,34,839.0,4.0,3.0,7.0
+Premier League,Liverpool FC,Fernando Brown,Midfielder,34,989.0,4.0,6.0,10.0
+Premier League,Liverpool FC,Jean Anderson,Forward,33,845.0,3.0,6.0,9.0
+Premier League,Liverpool FC,James Williams,Forward,34,1041.0,7.0,2.0,9.0
+Premier League,Manchester City,Martin Wilson,Midfielder,32,598.0,3.0,3.0,6.0
+Premier League,Manchester City,Karim Anderson,Forward,27,803.0,2.0,3.0,5.0
+Premier League,Manchester City,Bukayo Smith,Midfielder,24,864.0,1.0,4.0,5.0
+Premier League,Manchester United,Harry Silva,Forward,27,1205.0,3.0,9.0,12.0
+Premier League,Manchester United,Pedro Rice,Midfielder,27,1204.0,6.0,6.0,12.0
+Premier League,Manchester United,Reece Palmer,Forward,28,1040.0,3.0,8.0,11.0
+Premier League,Newcastle United,Reece Jones,Forward,26,934.0,3.0,6.0,9.0
+Premier League,Newcastle United,Ollie White,Midfielder,22,1101.0,1.0,6.0,7.0
+Premier League,Newcastle United,Antoine Williams,Midfielder,22,943.0,2.0,4.0,6.0
+Premier League,Tottenham Hotspur,Rafael Palmer,Forward,28,1021.0,6.0,4.0,10.0
+Premier League,Tottenham Hotspur,James Garcia,Forward,29,980.0,1.0,5.0,6.0
+Premier League,Tottenham Hotspur,Fernando Palmer,Midfielder,22,933.0,3.0,3.0,6.0
+Premier League,West Ham United,Cole Anderson,Forward,26,1168.0,3.0,7.0,10.0
+Premier League,West Ham United,Bukayo Williams,Midfielder,24,901.0,3.0,5.0,8.0
+Premier League,West Ham United,Ollie Thomas,Forward,31,748.0,4.0,4.0,8.0
