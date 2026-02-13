@@ -8,12 +8,16 @@ from typing import Dict
 from pathlib import Path
 from logging import Logger, basicConfig, FileHandler, Formatter, getLogger, INFO
 from datetime import datetime
+import duckdb
+import os
 
 
 # Define main paths
 project_path: Path = Path(__file__).resolve().parents[1]
 ingestion_path = project_path / "outputs" / "logs" / "ingestion"
 ingestion_path.mkdir(parents=True, exist_ok=True)
+db_path = project_path / "data" / "processed" / "scouting.duckdb"
+db_path.parent.mkdir(parents=True, exist_ok=True)
 
 
 # Set up logging
@@ -36,9 +40,26 @@ except Exception:
 
     
 # Main ingestion logic
+def create_conf_database(table_name: str = "elt_config"):
+    conn = duckdb.connect(str(db_path))
+    try:
+        conn.execute(f"""
+            CREATE TABLE IF NOT EXISTS {table_name} (
+                last_ingestion_date VARCHAR NOT NULL DEFAULT '1900-01-01'
+            );
+            INSERT INTO {table_name} (last_ingestion_date) 
+                VALUES ('1900-01-01');
+            """)
+        logger.info("Configuration table '%s' created successfully in DuckDB", table_name)
+    except Exception as e:
+        logger.exception("Failed to create configuration table '%s': %s", table_name, e)
+    finally:
+        conn.close()
+
 def ingest_from_raw(
     path: str,
     output_dir: str,
+    force:bool = False
 ) -> None:
     """
     Ingest files (CSV and/or JSON) found at `path`, write each as a separate
@@ -62,13 +83,34 @@ def ingest_from_raw(
         return
 
     try:
+        try:
+            conn = duckdb.connect(str(db_path))
+            try:
+                res = conn.execute("SELECT last_ingestion_date FROM elt_config").fetchone()
+                last_ingestion_date = datetime.strptime(res[0], "%Y-%m-%d").date()
+            except Exception:
+                logger.exception("Failed to read last_ingestion_date from DB")
+            finally:
+                conn.close()
+        except Exception as e:
+            logger.exception("Failed to connect to DB to read last_ingestion_date: %s", e)
+
         files = sorted(
-            [p for pat in ("*.csv", "*.json") for p in src.glob(pat) if p.is_file()],
+            [
+                p
+                for pat in ("*.csv", "*.json")
+                for p in src.glob(pat)
+                if p.is_file()
+                and (datetime.fromtimestamp(os.path.getmtime(p)).date() >= last_ingestion_date or force)
+            ],
             key=lambda p: p.name,
         )
+        logger.info("Found %d new files since last ingestion date %s", len(files), last_ingestion_date)
     except Exception as e:
         logger.exception("Failed to list files in %s: %s", src, e)
         return
+
+    ingested_count = 0
 
     for file in sorted(files):
         try:
@@ -111,19 +153,33 @@ def ingest_from_raw(
                 logger.warning("Skipping unsupported suffix: %s", file)
                 continue
             
-            timestamp: str = datetime.now().strftime("%Y%m%d%H%M%S%f")
-            parquet_name: str = f"{file.stem}_{timestamp}.parquet"
+            parquet_name: Path = f"{file.stem}.parquet"
             parquet_path: Path = dest / parquet_name
 
             try:
                 df.write_parquet(parquet_path)
+                ingested_count += 1
                 logger.info("File created: %s (rows=%d cols=%d)", parquet_path, df.shape[0], df.shape[1])
             except Exception as e:
                 logger.exception("Failed to write parquet for %s to %s: %s", file, parquet_path, e)
                 continue
-
+        
         except Exception as e:
             logger.exception("Failed to process %s: %s", file, e)
+    
+    if ingested_count > 0:
+        today_str = datetime.now().date().isoformat()
+        try:
+            conn = duckdb.connect(str(db_path))
+            try:
+                conn.execute("UPDATE elt_config SET last_ingestion_date = ?;", (today_str,))
+                logger.info("Updated elt_config.last_ingestion_date to %s (ingested %d files)", today_str, ingested_count)
+            except Exception:
+                logger.exception("Failed to update elt_config.last_ingestion_date to %s", today_str)
+            finally:
+                conn.close()
+        except Exception:
+            logger.exception("Failed to connect to DB to update last_ingestion_date")
 
 
 def load_from_landing(l_path:Path = None) -> Dict[str, pl.LazyFrame]:
@@ -144,7 +200,7 @@ def load_from_landing(l_path:Path = None) -> Dict[str, pl.LazyFrame]:
     datasets = {}
 
     try:
-        teams_df = pl.scan_parquet(landing_path / "teams_*.parquet")
+        teams_df = pl.scan_parquet(landing_path / "teams.parquet")
         datasets["teams"] = teams_df
     except Exception as e:
         logger.exception("Error while loading teams, check if landing folder contains teams parquet files: %s", e)
@@ -152,7 +208,7 @@ def load_from_landing(l_path:Path = None) -> Dict[str, pl.LazyFrame]:
         pass
 
     try:
-        players_df = pl.scan_parquet(landing_path / "players_*.parquet")
+        players_df = pl.scan_parquet(landing_path / "players.parquet")
         datasets["players"] = players_df
     except Exception as e:
         logger.exception("Error while loading players, check if landing folder contains players parquet files: %s", e)
@@ -160,7 +216,7 @@ def load_from_landing(l_path:Path = None) -> Dict[str, pl.LazyFrame]:
         pass
 
     try:
-        players_match_stats_df = pl.scan_parquet(landing_path / "player_match_stats_*.parquet")
+        players_match_stats_df = pl.scan_parquet(landing_path / "player_match_stats.parquet")
         datasets["player_match_stats"] = players_match_stats_df
     except Exception as e:
         logger.exception("Error while loading player_match_stats, check if landing folder contains player_match_stats parquet files: %s", e)
@@ -168,7 +224,7 @@ def load_from_landing(l_path:Path = None) -> Dict[str, pl.LazyFrame]:
         pass
 
     try:
-        matches_file = pl.scan_parquet(landing_path / "matches_*.parquet").collect()
+        matches_file = pl.scan_parquet(landing_path / "matches.parquet").collect()
         matches_rows = pl.DataFrame()
         for row in matches_file.iter_rows(named=True):
             match = json.loads(row["data"])
@@ -180,7 +236,7 @@ def load_from_landing(l_path:Path = None) -> Dict[str, pl.LazyFrame]:
         pass
 
     try:
-        match_events_file = pl.scan_parquet(landing_path / "match_events_*.parquet").collect()
+        match_events_file = pl.scan_parquet(landing_path / "match_events.parquet").collect()
         match_events_rows = pl.DataFrame()
         for row in match_events_file.iter_rows(named=True):
             match_events = json.loads(row["data"])
@@ -197,6 +253,7 @@ def main() -> None:
     logger.info("Starting raw data ingestion...")
 
     try:
+        create_conf_database()
         ingest_from_raw(path=project_path / "data" / "raw", output_dir=project_path / "data" / "landing")
         logger.info("Data ingestion step finished. See ingestion log for more information.")
     except Exception as e:

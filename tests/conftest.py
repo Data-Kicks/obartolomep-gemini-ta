@@ -6,7 +6,6 @@ import polars as pl
 from pathlib import Path
 import sys
 
-# Añadir src al path de Python
 src_path = Path(__file__).parent.parent / "src"
 sys.path.insert(0, str(src_path))
 

@@ -624,7 +624,7 @@ def create_teams_report(query_type: str = "polars", team_id:Optional[str] = None
     print(get_team_top3(query_type, team_id))
 
 def main():
-    query_type = "polars"
+    query_type = "sql"
     create_player_aggregated_view(query_type)
     create_players_report(query_type)
     create_teams_report(query_type)

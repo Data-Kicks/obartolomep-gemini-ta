@@ -26,7 +26,7 @@ class TestIngestFromRaw:
         
         dest_dir = tmp_path / "data" / "landing"
         
-        ingest_from_raw(str(src_dir), str(dest_dir))
+        ingest_from_raw(str(src_dir), str(dest_dir), force=True)
         
         parquet_files = list(dest_dir.glob("*.parquet"))
         assert len(parquet_files) == 1
@@ -48,7 +48,7 @@ class TestIngestFromRaw:
         
         dest_dir = tmp_path / "data" / "landing"
         
-        ingest_from_raw(str(src_dir), str(dest_dir))
+        ingest_from_raw(str(src_dir), str(dest_dir), force=True)
         
         parquet_files = list(dest_dir.glob("*.parquet"))
         assert len(parquet_files) == 1
@@ -137,7 +137,7 @@ class TestLoadFromLanding:
             "file": "matches.json",
             "data": json.dumps(match_data)
         }])
-        df.write_parquet(landing_dir / "matches_20240101.parquet")
+        df.write_parquet(landing_dir / "matches.parquet")
 
         datasets = load_from_landing(landing_dir)
         

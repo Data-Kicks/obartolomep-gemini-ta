@@ -519,7 +519,7 @@ def load_and_validate_data():
     if datasets["teams"].count().collect().shape[1] > 0:
         validation_results["teams"] = validate_teams(datasets["teams"].collect())
     else:
-        logger.info("Team dataset is emprty. Skipping teams validation.")
+        logger.info("Team dataset is empty. Skipping teams validation.")
         validation_results["teams"] = {
             "total_rows": 0,
             "valid_rows": 0,
@@ -534,7 +534,7 @@ def load_and_validate_data():
                 datasets["teams"].select("team_id").collect()
         )
     else:
-        logger.info("Players dataset is emprty. Skipping players validation.")
+        logger.info("Players dataset is empty. Skipping players validation.")
         validation_results["players"] = {
             "total_rows": 0,
             "valid_rows": 0,
@@ -546,7 +546,7 @@ def load_and_validate_data():
     if datasets["matches"].count().collect().shape[1] > 0:
         validation_results["matches"] = validate_matches(datasets["matches"].collect())
     else:
-        logger.info("Matches dataset is emprty. Skipping matches validation.")
+        logger.info("Matches dataset is empty. Skipping matches validation.")
         validation_results["matches"] = {
             "total_rows": 0,
             "valid_rows": 0,
@@ -562,7 +562,7 @@ def load_and_validate_data():
                 datasets["matches"].select("match_id").collect()
         )
     else:
-        logger.info("Player match stats dataset is emprty. Skipping player match stats validation.")
+        logger.info("Player match stats dataset is empty. Skipping player match stats validation.")
         validation_results["player_match_stats"] = {
             "total_rows": 0,
             "valid_rows": 0,
@@ -579,7 +579,7 @@ def load_and_validate_data():
                 datasets["players"].select("player_id").collect()
         )
     else:
-        logger.info("Match events dataset is emprty. Skipping match events validation.")
+        logger.info("Match events dataset is empty. Skipping match events validation.")
         validation_results["match_events"] = {
             "total_rows": 0,
             "valid_rows": 0,
