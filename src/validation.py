@@ -515,23 +515,78 @@ def load_and_validate_data():
     datasets = load_from_landing()
 
     validation_results = {}
-    validation_results["teams"] = validate_teams(datasets["teams"].collect())
-    validation_results["players"] = validate_players(
-            datasets["players"].collect(), 
-            datasets["teams"].select("team_id").collect()
+
+    if datasets["teams"].count().collect().shape[1] > 0:
+        validation_results["teams"] = validate_teams(datasets["teams"].collect())
+    else:
+        logger.info("Team dataset is emprty. Skipping teams validation.")
+        validation_results["teams"] = {
+            "total_rows": 0,
+            "valid_rows": 0,
+            "invalid_rows": 0,
+            "errors": [],
+            "warnings": ["Teams dataset is empty"]
+        }
+
+    if datasets["players"].count().collect().shape[1] > 0:
+        validation_results["players"] = validate_players(
+                datasets["players"].collect(), 
+                datasets["teams"].select("team_id").collect()
         )
-    validation_results["matches"] = validate_matches(datasets["matches"].collect())
-    validation_results["player_match_stats"] = validate_player_match_stats(
-            datasets["player_match_stats"].collect(),
-            datasets["players"].select("player_id").collect(),
-            datasets["matches"].select("match_id").collect()
+    else:
+        logger.info("Players dataset is emprty. Skipping players validation.")
+        validation_results["players"] = {
+            "total_rows": 0,
+            "valid_rows": 0,
+            "invalid_rows": 0,
+            "errors": [],
+            "warnings": ["Players dataset is empty"]
+        }
+
+    if datasets["matches"].count().collect().shape[1] > 0:
+        validation_results["matches"] = validate_matches(datasets["matches"].collect())
+    else:
+        logger.info("Matches dataset is emprty. Skipping matches validation.")
+        validation_results["matches"] = {
+            "total_rows": 0,
+            "valid_rows": 0,
+            "invalid_rows": 0,
+            "errors": [],
+            "warnings": ["Matches dataset is empty"]
+        }
+
+    if datasets["player_match_stats"].count().collect().shape[1] > 0:
+        validation_results["player_match_stats"] = validate_player_match_stats(
+                datasets["player_match_stats"].collect(),
+                datasets["players"].select("player_id").collect(),
+                datasets["matches"].select("match_id").collect()
         )
-    validation_results["match_events"] = validate_match_events(
-            datasets["match_events"].collect(),
-            datasets["matches"].select("match_id").collect(),
-            datasets["teams"].select("team_id").collect(),
-            datasets["players"].select("player_id").collect()
+    else:
+        logger.info("Player match stats dataset is emprty. Skipping player match stats validation.")
+        validation_results["player_match_stats"] = {
+            "total_rows": 0,
+            "valid_rows": 0,
+            "invalid_rows": 0,
+            "errors": [],
+            "warnings": ["Player match stats dataset is empty"]
+        }
+
+    if datasets["match_events"].count().collect().shape[1] > 0:
+        validation_results["match_events"] = validate_match_events(
+                datasets["match_events"].collect(),
+                datasets["matches"].select("match_id").collect(),
+                datasets["teams"].select("team_id").collect(),
+                datasets["players"].select("player_id").collect()
         )
+    else:
+        logger.info("Match events dataset is emprty. Skipping match events validation.")
+        validation_results["match_events"] = {
+            "total_rows": 0,
+            "valid_rows": 0,
+            "invalid_rows": 0,
+            "errors": [],
+            "warnings": ["Match events dataset is empty"]
+        }
 
     return validation_results
 

@@ -126,20 +126,49 @@ def ingest_from_raw(
             logger.exception("Failed to process %s: %s", file, e)
 
 
-def load_from_landing() -> Dict[str, pl.LazyFrame]:
+def load_from_landing(l_path:Path = None) -> Dict[str, pl.LazyFrame]:
+    """
+    Load datasets from landing zone into memory as Polars LazyFrames.
+
+    Args:
+        l_path: Optional path to landing directory. If None, defaults to project_path/data/landing.
+
+    Returns:
+        A dictionary with dataset names as keys and corresponding Polars LazyFrames as values.
+    """
+    if l_path is None:
+        landing_path = project_path / "data" / "landing"
+    else:
+        landing_path = l_path
+
     datasets = {}
 
-    teams_df = pl.scan_parquet(project_path / "data/landing/teams_*.parquet")
-    datasets["teams"] = teams_df
-
-    players_df = pl.scan_parquet(project_path / "data/landing/players_*.parquet")
-    datasets["players"] = players_df
-
-    players_match_stats_df = pl.scan_parquet(project_path / "data/landing/player_match_stats_*.parquet")
-    datasets["player_match_stats"] = players_match_stats_df
+    try:
+        teams_df = pl.scan_parquet(landing_path / "teams_*.parquet")
+        datasets["teams"] = teams_df
+    except Exception as e:
+        logger.exception("Error while loading teams: %s", e)
+        datasets["teams"] = pl.LazyFrame()
+        pass
 
     try:
-        matches_file = pl.scan_parquet(project_path / "data/landing/matches_*.parquet").collect()
+        players_df = pl.scan_parquet(landing_path / "players_*.parquet")
+        datasets["players"] = players_df
+    except Exception as e:
+        logger.exception("Error while loading players: %s", e)
+        datasets["players"] = pl.LazyFrame()
+        pass
+
+    try:
+        players_match_stats_df = pl.scan_parquet(landing_path / "player_match_stats_*.parquet")
+        datasets["player_match_stats"] = players_match_stats_df
+    except Exception as e:
+        logger.exception("Error while loading player_match_stats: %s", e)
+        datasets["player_match_stats"] = pl.LazyFrame()
+        pass
+
+    try:
+        matches_file = pl.scan_parquet(landing_path / "matches_*.parquet").collect()
         matches_rows = pl.DataFrame()
         for row in matches_file.iter_rows(named=True):
             match = json.loads(row["data"])
@@ -148,9 +177,10 @@ def load_from_landing() -> Dict[str, pl.LazyFrame]:
     except Exception as e:
         logger.exception("Error while loading matches: %s", e)
         datasets["matches"] = pl.LazyFrame()
+        pass
 
     try:
-        match_events_file = pl.scan_parquet(project_path / "data/landing/match_events_*.parquet").collect()
+        match_events_file = pl.scan_parquet(landing_path / "match_events_*.parquet").collect()
         match_events_rows = pl.DataFrame()
         for row in match_events_file.iter_rows(named=True):
             match_events = json.loads(row["data"])
@@ -159,6 +189,7 @@ def load_from_landing() -> Dict[str, pl.LazyFrame]:
     except Exception as e:
         logger.exception("Error while loading match_events: %s", e)
         datasets["match_events"] = pl.LazyFrame()
+        pass
 
     return datasets
         

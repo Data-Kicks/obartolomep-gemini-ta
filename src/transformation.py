@@ -116,6 +116,10 @@ def transform_teams(teams_df: pl.LazyFrame) -> pl.DataFrame:
     """
     logger.info("Transforming teams data...")
 
+    if teams_df.count().collect().shape[1] == 0:
+        logger.warning("Teams dataset is empty, skipping transformation.")
+        return pl.DataFrame()
+
     try:
         # Remove duplicates
         teams_df = teams_df.unique(subset=["team_id"], keep="last").collect()
@@ -138,6 +142,10 @@ def transform_players(players_df: pl.LazyFrame, team_id_list: list) -> pl.DataFr
     """
     logger.info("Transforming players data...")
     
+    if players_df.count().collect().shape[1] == 0:
+        logger.warning("Players dataset is empty, skipping transformation.")
+        return pl.DataFrame()
+
     try:
         # Normalize positions
         if "position" in players_df.columns:
@@ -169,7 +177,7 @@ def transform_players(players_df: pl.LazyFrame, team_id_list: list) -> pl.DataFr
 
         # Create new columns
         players_df = players_df.with_columns(
-            pl.col("date_of_birth").map_elements(calculate_age).alias("age")
+            pl.col("date_of_birth").map_elements(calculate_age, return_dtype=pl.Int16).alias("age")
         )
         
         logger.info(f"Players transformed: {len(players_df)} rows, {len(players_df.columns)} columns")
@@ -190,6 +198,10 @@ def transform_matches(matches_df: pl.LazyFrame) -> pl.DataFrame:
     """
     logger.info("Transforming matches data...")
     
+    if matches_df.count().collect().shape[1] == 0:
+        logger.warning("Matches dataset is empty, skipping transformation.")
+        return pl.DataFrame()
+
     try:
         # Normalize date formats
         if "match_date" in matches_df.columns:
@@ -221,6 +233,10 @@ def transform_player_match_stats(stats_df: pl.LazyFrame, player_id_list: list, m
         Cleaned player stats DataFrame.
     """
     logger.info("Transforming player match stats...")
+
+    if stats_df.count().collect().shape[1] == 0:
+        logger.warning("Player match stats dataset is empty, skipping transformation.")
+        return pl.DataFrame()
 
     try:
         # Filter out orphaned records
@@ -276,6 +292,10 @@ def transform_match_events(events_df: pl.LazyFrame, match_id_list: list, team_id
     """
     logger.info("Transforming match events...")
 
+    if events_df.count().collect().shape[1] == 0:
+        logger.warning("Match events dataset is empty, skipping transformation.")
+        return pl.DataFrame()
+
     try:
         # Filter out orphaned records
         events_df = events_df.filter(
@@ -305,22 +325,28 @@ def transform_all(datasets: Dict[str, pl.LazyFrame]) -> Dict[str, pl.DataFrame]:
     """
     transformed = {}
 
-    if "teams" in datasets:
+    if ("teams" in datasets) & (datasets["teams"].count().collect().shape[1] > 0):
         transformed["teams"] = transform_teams(datasets["teams"])
-    if "players" in datasets:
+    if (("players" in datasets) & (datasets["players"].count().collect().shape[1] > 0) and 
+        ("teams" in transformed) & (len(transformed["teams"]) > 0)):
         transformed["players"] = transform_players(
             datasets["players"],
             transformed["teams"].select("team_id")
         )
-    if "matches" in datasets:
+    if ("matches" in datasets) and (datasets["matches"].count().collect().shape[1] > 0):
         transformed["matches"] = transform_matches(datasets["matches"])
-    if "player_match_stats" in datasets:
+    if (("player_match_stats" in datasets) and (datasets["player_match_stats"].count().collect().shape[1] > 0) and 
+        ("players" in transformed) and (len(transformed["players"]) > 0) and 
+        ("matches" in transformed) and (len(transformed["matches"]) > 0)):
         transformed["player_match_stats"] = transform_player_match_stats(
             datasets["player_match_stats"],
             transformed["players"].select("player_id"),
             transformed["matches"].select("match_id")
         )
-    if "match_events" in datasets:
+    if (("match_events" in datasets) and (datasets["match_events"].count().collect().shape[1] > 0) and
+        ("matches" in transformed) and (len(transformed["matches"]) > 0) and
+        ("teams" in transformed) and (len(transformed["teams"]) > 0) and
+        ("players" in transformed) and (len(transformed["players"]) > 0)):
         transformed["match_events"] = transform_match_events(
             datasets["match_events"],
             transformed["matches"].select("match_id"),
