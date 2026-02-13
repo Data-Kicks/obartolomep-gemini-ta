@@ -33,7 +33,7 @@ Complete ELT and Analysis project for football scouting data. Ingests raw CSV/JS
 
 Before reaching the final analysis, the raw data passes through a complete pipeline that looks like this:
 
-![](img/elt.png){fig-align="center"}
+![](img/elt.png)
 
 1.  Ingestion (*src/ingestion.py*):
 
@@ -73,7 +73,7 @@ Before reaching the final analysis, the raw data passes through a complete pipel
 
     3.  Once the data is cleaned and transformed, the final model is created using DuckDB. It looks like this:
 
-        ![](img/data_model.png){width="695"}
+        ![](img/data_model.png)
 
 Notes:
 
