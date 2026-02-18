@@ -1,2 +1,0 @@
-league,team_name,avg_age,total_goals,total_assists,total_minutes_played,total_shots,total_shots_on_target,avg_shot_accuracy,total_passes_attempted,total_passes_completed,avg_pass_accuracy,total_key_passes,total_tackles,total_interceptions,total_duels_won,total_duels_lost,avg_duel_win_rate,total_fouls_committed,total_yellow_cards,total_red_cards,total_xg,total_xa,total_g_xg
-Premier League,Arsenal FC,28.59,29.0,37.0,18683.0,261.0,119.0,0.44,11748.0,9531.0,0.81,276.0,652.0,453.0,1788.0,1696.0,0.51,530.0,26.0,3.0,34.51,20.74,-6.51

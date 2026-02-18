@@ -1,16 +1,16 @@
 """
 Database queries and utilities.
 """
+
 table_queries = {
-    'teams': """CREATE TABLE dim_teams (
+    "teams": """CREATE TABLE dim_teams (
             team_id VARCHAR NOT NULL PRIMARY KEY,
             name VARCHAR NOT NULL,
             league VARCHAR NOT NULL,
             stadium VARCHAR NOT NULL,
             city VARCHAR NOT NULL
             );""",
-
-    'players': """CREATE TABLE dim_players (
+    "players": """CREATE TABLE dim_players (
                 player_id VARCHAR NOT NULL PRIMARY KEY,
                 name VARCHAR NOT NULL,
                 team_id VARCHAR NOT NULL,
@@ -21,8 +21,7 @@ table_queries = {
                 contract_until DATE,
                 age INTEGER NOT NULL
             );""",
-
-    'matches': """CREATE TABLE dim_matches (
+    "matches": """CREATE TABLE dim_matches (
                 match_id VARCHAR NOT NULL PRIMARY KEY,
                 competition VARCHAR NOT NULL,
                 season VARCHAR NOT NULL,
@@ -35,8 +34,7 @@ table_queries = {
                 attendance INTEGER NOT NULL,
                 referee VARCHAR NOT NULL
             );""",
-
-    'match_events': """CREATE TABLE fact_match_events (
+    "match_events": """CREATE TABLE fact_match_events (
                     event_id VARCHAR NOT NULL PRIMARY KEY,
                     match_id VARCHAR NOT NULL,
                     minute INTEGER NOT NULL,
@@ -53,8 +51,7 @@ table_queries = {
                     pass_type VARCHAR DEFAULT '',
                     recipient_id VARCHAR DEFAULT ''
                 );""",
-
-    'player_match_stats': """CREATE TABLE fact_player_match_stats (
+    "player_match_stats": """CREATE TABLE fact_player_match_stats (
                             player_id VARCHAR NOT NULL,
                             match_id VARCHAR NOT NULL,
                             minutes_played INTEGER NOT NULL,
@@ -77,7 +74,7 @@ table_queries = {
                             goal_contribution INTEGER NOT NULL, 
                             g_xg FLOAT,
                             PRIMARY KEY (player_id, match_id)
-                        );"""
+                        );""",
 }
 
 agg_players_query = """CREATE OR REPLACE TABLE agg_player_stats_sql AS
@@ -234,7 +231,7 @@ teams_summary_query = """SELECT
                         INNER JOIN dim_teams t 
                             ON a.team_id = t.team_id
                         GROUP BY t.team_id, t.name, t.league
-                        ORDER BY t.name;""" 
+                        ORDER BY t.name;"""
 
 teams_top3_query = """WITH agg_player_stats_with_league AS (
                         SELECT 
@@ -274,7 +271,8 @@ teams_top3_query = """WITH agg_player_stats_with_league AS (
                             goal_contribution
                         FROM ranked_team_players
                         WHERE ranking <= 3
-                        ORDER BY team_name ASC, goal_contribution DESC;""" 
+                        ORDER BY team_name ASC, goal_contribution DESC;"""
+
 
 def get_table_type(name: str) -> str:
     dimensions = ["teams", "players", "matches"]
@@ -286,4 +284,4 @@ def get_table_type(name: str) -> str:
     elif name in facts:
         type = "fact"
 
-    return type  
+    return type

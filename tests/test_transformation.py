@@ -1,6 +1,7 @@
 """
 Unit tests for transformation script functions.
 """
+
 from datetime import datetime
 from unittest.mock import patch
 
@@ -13,7 +14,7 @@ from transformation import (
     transform_matches,
     transform_player_match_stats,
     transform_match_events,
-    transform_all
+    transform_all,
 )
 
 
@@ -21,6 +22,7 @@ class TestMappingFunctions:
     """
     Test mapping and helper functions.
     """
+
     def test_map_player_position_standard(self):
         """
         Test mapping standard positions.
@@ -65,13 +67,13 @@ class TestMappingFunctions:
         """
         Test age calculation.
         """
-        with patch('transformation.datetime') as mock_datetime:
+        with patch("transformation.datetime") as mock_datetime:
             mock_datetime.today.return_value = datetime(2024, 1, 1)
             mock_datetime.strptime = datetime.strptime
-            
+
             assert calculate_age("1990-01-01") == 34
             assert calculate_age("2000-12-31") == 23
-            
+
     def test_calculate_age_invalid(self):
         """
         Test age calculation with invalid input.
@@ -108,24 +110,27 @@ class TestTransformPlayers:
     """
     Test players transformation.
     """
+
     def test_transform_players_success(self, sample_players_df, sample_teams_df):
         """
         Test successful players transformation.
         """
         team_ids = sample_teams_df.select("team_id")
         result = transform_players(sample_players_df.lazy(), team_ids)
-        
+
         assert len(result) == 4
         assert "position" in result.columns
         assert "age" in result.columns
 
-    def test_transform_players_with_issues(self, sample_players_df_with_issues, sample_teams_df):
+    def test_transform_players_with_issues(
+        self, sample_players_df_with_issues, sample_teams_df
+    ):
         """
         Test players transformation with data quality issues.
         """
         team_ids = sample_teams_df.select("team_id")
         result = transform_players(sample_players_df_with_issues.lazy(), team_ids)
-        
+
         # Should filter out orphaned records and duplicates
         assert len(result) == 2
 
@@ -134,6 +139,7 @@ class TestTransformMatches:
     """
     Test matches transformation.
     """
+
     def test_transform_matches_success(self, sample_matches_df):
         """
         Test successful matches transformation.
@@ -145,7 +151,7 @@ class TestTransformMatches:
     def test_transform_matches_duplicates(self, sample_matches_df_with_duplicates):
         """
         Test matches transformation with duplicates.
-        """        
+        """
         result = transform_matches(sample_matches_df_with_duplicates.lazy())
         assert len(result) == 1
 
@@ -154,39 +160,43 @@ class TestTransformPlayerMatchStats:
     """
     Test player match stats transformation.
     """
-    def test_transform_player_match_stats_success(self, sample_player_match_stats_df, sample_players_df, sample_matches_df):
+
+    def test_transform_player_match_stats_success(
+        self, sample_player_match_stats_df, sample_players_df, sample_matches_df
+    ):
         """
         Test successful player match stats transformation.
         """
         player_ids = sample_players_df.select("player_id")
         match_ids = sample_matches_df.select("match_id")
-        
+
         result = transform_player_match_stats(
-            sample_player_match_stats_df.lazy(),
-            player_ids,
-            match_ids
+            sample_player_match_stats_df.lazy(), player_ids, match_ids
         )
-        
+
         assert len(result) == 4
         assert "goal_contributions" in result.columns
         assert "g_xg" in result.columns
 
-    def test_transform_player_match_stats_fix_issues(self, sample_player_match_stats_df_with_issues, sample_players_df, sample_matches_df):
+    def test_transform_player_match_stats_fix_issues(
+        self,
+        sample_player_match_stats_df_with_issues,
+        sample_players_df,
+        sample_matches_df,
+    ):
         """
         Test fixing data quality issues in player match stats.
         """
         player_ids = sample_players_df.select("player_id")
         match_ids = sample_matches_df.select("match_id")
-        
+
         result = transform_player_match_stats(
-            sample_player_match_stats_df_with_issues.lazy(),
-            player_ids,
-            match_ids
+            sample_player_match_stats_df_with_issues.lazy(), player_ids, match_ids
         )
-        
+
         # Should filter orphaned records
         assert len(result) == 2
-        
+
         # Check xg fixes (negative xg -> None)
         xg_values = result["xg"].to_list()
         assert all(x is None or x >= 0 for x in xg_values)
@@ -196,39 +206,46 @@ class TestTransformMatchEvents:
     """
     Test match events transformation.
     """
-    def test_transform_match_events_success(self, sample_match_events_df, sample_matches_df, sample_teams_df, sample_players_df):
+
+    def test_transform_match_events_success(
+        self,
+        sample_match_events_df,
+        sample_matches_df,
+        sample_teams_df,
+        sample_players_df,
+    ):
         """
         Test successful match events transformation.
         """
         match_ids = sample_matches_df.select("match_id")
         team_ids = sample_teams_df.select("team_id")
         player_ids = sample_players_df.select("player_id")
-        
+
         result = transform_match_events(
-            sample_match_events_df.lazy(),
-            match_ids,
-            team_ids,
-            player_ids
+            sample_match_events_df.lazy(), match_ids, team_ids, player_ids
         )
-        
+
         assert len(result) > 0
         assert len(result) <= len(sample_match_events_df)
 
-    def test_transform_match_events_filter_orphaned(self, sample_match_events_df_with_issues, sample_matches_df, sample_teams_df, sample_players_df):
+    def test_transform_match_events_filter_orphaned(
+        self,
+        sample_match_events_df_with_issues,
+        sample_matches_df,
+        sample_teams_df,
+        sample_players_df,
+    ):
         """
         Test filtering orphaned match events.
         """
         match_ids = sample_matches_df.select("match_id")
         team_ids = sample_teams_df.select("team_id")
         player_ids = sample_players_df.select("player_id")
-        
+
         result = transform_match_events(
-            sample_match_events_df_with_issues.lazy(),
-            match_ids,
-            team_ids,
-            player_ids
+            sample_match_events_df_with_issues.lazy(), match_ids, team_ids, player_ids
         )
-        
+
         assert len(result) == 3
 
 
@@ -236,8 +253,15 @@ class TestTransformAll:
     """
     Test the complete transformation pipeline.
     """
-    def test_transform_all_success(self, sample_teams_df, sample_players_df, sample_matches_df, 
-                                  sample_player_match_stats_df, sample_match_events_df):
+
+    def test_transform_all_success(
+        self,
+        sample_teams_df,
+        sample_players_df,
+        sample_matches_df,
+        sample_player_match_stats_df,
+        sample_match_events_df,
+    ):
         """
         Test successful transformation of all datasets.
         """
@@ -246,17 +270,17 @@ class TestTransformAll:
             "players": sample_players_df.lazy(),
             "matches": sample_matches_df.lazy(),
             "player_match_stats": sample_player_match_stats_df.lazy(),
-            "match_events": sample_match_events_df.lazy()
+            "match_events": sample_match_events_df.lazy(),
         }
-        
+
         result = transform_all(datasets)
-        
+
         assert "teams" in result
         assert "players" in result
         assert "matches" in result
         assert "player_match_stats" in result
         assert "match_events" in result
-        
+
         assert not result["teams"].is_empty()
         assert not result["players"].is_empty()
         assert not result["matches"].is_empty()
